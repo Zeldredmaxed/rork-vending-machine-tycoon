@@ -372,7 +372,7 @@ struct BracketEntryView: View {
                     Image(systemName: skillAcknowledged ? "checkmark.square.fill" : "square")
                         .font(.title3)
                         .foregroundStyle(skillAcknowledged ? AppTheme.electricGreen : AppTheme.dimText)
-                    Text("I acknowledge that VendFX is a game of skill, not a game of chance. My results depend on my strategic decisions, market analysis, and operational management.")
+                    Text("I acknowledge that VendFX is a game of skill, my success depends on my strategic business decisions, and winning cash prizes is not based on chance.")
                         .font(.system(size: 12))
                         .foregroundStyle(AppTheme.softWhite)
                         .multilineTextAlignment(.leading)

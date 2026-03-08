@@ -4,10 +4,14 @@ struct ContentView: View {
     @State private var viewModel = GameViewModel()
     @State private var selectedTab = 0
     @State private var isOnboarded = false
+    @Environment(LocationComplianceService.self) private var locationService
 
     var body: some View {
         if isOnboarded {
-            if let recap = viewModel.idleRecap {
+            if locationService.isInRestrictedState {
+                GeoBlockedOverlayView(viewModel: viewModel)
+                    .preferredColorScheme(.dark)
+            } else if let recap = viewModel.idleRecap {
                 IdleRecapView(viewModel: viewModel, recap: recap)
                     .preferredColorScheme(.dark)
             } else {
@@ -172,4 +176,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environment(TrackingService())
+        .environment(LocationComplianceService())
 }

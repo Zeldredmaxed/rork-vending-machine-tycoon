@@ -201,9 +201,26 @@ struct DualWalletView: View {
                 .neonCardStyle(AppTheme.neonCyan)
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Add Funds")
-                        .font(.headline)
-                        .foregroundStyle(AppTheme.softWhite)
+                    HStack(spacing: 6) {
+                        Image(systemName: "creditcard.fill")
+                            .font(.caption)
+                            .foregroundStyle(AppTheme.neonCyan)
+                        Text("Add Funds")
+                            .font(.headline)
+                            .foregroundStyle(AppTheme.softWhite)
+                    }
+
+                    HStack(spacing: 6) {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: 10))
+                        Text("Real-money deposits for competition entry fees and prize withdrawals are processed via Stripe, a licensed payment processor. These are not digital goods.")
+                            .font(.system(size: 10))
+                    }
+                    .foregroundStyle(AppTheme.dimText)
+                    .padding(10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(AppTheme.neonCyan.opacity(0.04))
+                    .clipShape(.rect(cornerRadius: 8))
 
                     HStack(spacing: 8) {
                         quickDepositButton(amount: 5, vb: 5000)
@@ -230,14 +247,31 @@ struct DualWalletView: View {
                 .neonCardStyle(AppTheme.neonCyan)
 
                 VStack(alignment: .leading, spacing: 14) {
-                    Text("Quick Purchases")
-                        .font(.headline)
-                        .foregroundStyle(AppTheme.softWhite)
+                    HStack(spacing: 6) {
+                        Image(systemName: "applelogo")
+                            .font(.caption)
+                            .foregroundStyle(AppTheme.softWhite)
+                        Text("Digital Goods (Apple In-App Purchase)")
+                            .font(.headline)
+                            .foregroundStyle(AppTheme.softWhite)
+                    }
+
+                    HStack(spacing: 6) {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: 10))
+                        Text("Subscriptions and cosmetic items are digital goods purchased through Apple's In-App Purchase system. These are separate from real-money competition funds.")
+                            .font(.system(size: 10))
+                    }
+                    .foregroundStyle(AppTheme.dimText)
+                    .padding(10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.white.opacity(0.03))
+                    .clipShape(.rect(cornerRadius: 8))
 
                     premiumPurchaseRow(
                         icon: "eye.fill",
                         title: "Market Insight Subscription",
-                        subtitle: "24-hour advance price alerts",
+                        subtitle: "24-hour advance price alerts • Apple IAP",
                         price: "$2.99/mo",
                         color: AppTheme.gold,
                         isActive: viewModel.player.hasMarketInsight
@@ -246,7 +280,7 @@ struct DualWalletView: View {
                     premiumPurchaseRow(
                         icon: "paintpalette.fill",
                         title: "Premium Machine Skins",
-                        subtitle: "Exclusive cosmetic designs",
+                        subtitle: "Exclusive cosmetic designs • Apple IAP",
                         price: "From 500 VB",
                         color: AppTheme.neonCyan,
                         isActive: false
@@ -255,7 +289,7 @@ struct DualWalletView: View {
                     premiumPurchaseRow(
                         icon: "sparkles",
                         title: "Limited Edition Wraps",
-                        subtitle: "Time-limited designer wraps",
+                        subtitle: "Time-limited designer wraps • Apple IAP",
                         price: "From 2,000 VB",
                         color: Color.purple,
                         isActive: false

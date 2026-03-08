@@ -401,7 +401,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "VendFX uses your location to place vending machines on the map and find optimal territories.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "VendFX requires camera access to scan your government-issued ID for identity verification (KYC) as required by federal regulations.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "VendFX requires continuous location access to verify you are not in a restricted jurisdiction for real-money skill gaming compliance.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "VendFX uses your location to place vending machines on the map, find optimal territories, and verify you are in a jurisdiction where real-money skill gaming is permitted.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "VendFX uses tracking to measure ad performance and personalize your experience. You can change this anytime in Settings.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -435,7 +438,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "VendFX uses your location to place vending machines on the map and find optimal territories.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "VendFX requires camera access to scan your government-issued ID for identity verification (KYC) as required by federal regulations.";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "VendFX requires continuous location access to verify you are not in a restricted jurisdiction for real-money skill gaming compliance.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "VendFX uses your location to place vending machines on the map, find optimal territories, and verify you are in a jurisdiction where real-money skill gaming is permitted.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "VendFX uses tracking to measure ad performance and personalize your experience. You can change this anytime in Settings.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

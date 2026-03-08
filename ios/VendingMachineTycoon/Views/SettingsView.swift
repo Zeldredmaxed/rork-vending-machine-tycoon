@@ -1,8 +1,10 @@
 import SwiftUI
+import AppTrackingTransparency
 
 struct SettingsView: View {
     let viewModel: GameViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(TrackingService.self) private var trackingService
     @State private var showReputationHistory = false
     @State private var showResponsibleGaming = false
     @State private var showNotificationPrefs = false
@@ -11,7 +13,6 @@ struct SettingsView: View {
     @State private var showAccountDeletion = false
     @State private var showDataExportConfirm = false
     @State private var showLocationPrivacy = false
-    @State private var trackingEnabled = false
 
     var body: some View {
         NavigationStack {
@@ -212,17 +213,21 @@ struct SettingsView: View {
                         .foregroundStyle(.orange)
                 }
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Cookie & Tracking")
+                    Text("App Tracking Transparency")
                         .font(.subheadline)
                         .foregroundStyle(AppTheme.softWhite)
-                    Text("Analytics & personalized ads")
+                    Text(trackingService.trackingAuthorized ? "Tracking allowed" : "Tracking not allowed")
                         .font(.system(size: 10))
                         .foregroundStyle(AppTheme.dimText)
                 }
                 Spacer()
-                Toggle("", isOn: $trackingEnabled)
-                    .labelsHidden()
-                    .tint(.orange)
+                Text(trackingService.trackingAuthorized ? "Allowed" : "Denied")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(trackingService.trackingAuthorized ? AppTheme.electricGreen : AppTheme.neonRed)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background((trackingService.trackingAuthorized ? AppTheme.electricGreen : AppTheme.neonRed).opacity(0.1))
+                    .clipShape(Capsule())
             }
         }
         .padding(16)
@@ -241,8 +246,21 @@ struct SettingsView: View {
             }
             .buttonStyle(.plain)
 
-            settingsRow(icon: "doc.text.fill", title: "Terms of Service", subtitle: "", color: AppTheme.dimText)
-            settingsRow(icon: "hand.raised.fill", title: "Privacy Policy", subtitle: "", color: AppTheme.dimText)
+            Link(destination: URL(string: "https://vendfx.app/terms")!) {
+                settingsRowContent(icon: "doc.text.fill", title: "Terms of Service", subtitle: "View terms", color: AppTheme.dimText)
+            }
+
+            Link(destination: URL(string: "https://vendfx.app/privacy")!) {
+                settingsRowContent(icon: "hand.raised.fill", title: "Privacy Policy", subtitle: "View policy", color: AppTheme.dimText)
+            }
+
+            Link(destination: URL(string: "https://vendfx.app/disputes")!) {
+                settingsRowContent(icon: "exclamationmark.bubble.fill", title: "Dispute Resolution Process", subtitle: "View process", color: AppTheme.dimText)
+            }
+
+            Link(destination: URL(string: "https://vendfx.app/eula")!) {
+                settingsRowContent(icon: "doc.badge.gearshape.fill", title: "End User License Agreement", subtitle: "View EULA", color: AppTheme.dimText)
+            }
         }
         .padding(16)
         .neonCardStyle(AppTheme.neonCyan)
@@ -351,7 +369,7 @@ struct LocationPrivacySheet: View {
                                 .font(.headline)
                                 .foregroundStyle(AppTheme.softWhite)
                         }
-                        Text("We take your location privacy seriously. Here's how we handle your GPS data.")
+                        Text("For your privacy and regulatory compliance, VendFX requires location tracking to verify you are not in a restricted jurisdiction. All historical location data is permanently purged from our servers every 30 days.")
                             .font(.system(size: 12))
                             .foregroundStyle(AppTheme.dimText)
                     }
