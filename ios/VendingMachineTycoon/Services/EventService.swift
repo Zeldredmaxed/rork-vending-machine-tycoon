@@ -1,7 +1,7 @@
 import Foundation
 import CoreLocation
 
-struct EventService {
+nonisolated struct EventService {
     static func simulateTransactionEvents(for machine: VendingMachine) -> [GameEvent] {
         var events: [GameEvent] = []
 

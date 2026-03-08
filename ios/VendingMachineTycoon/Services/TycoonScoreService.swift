@@ -1,6 +1,6 @@
 import Foundation
 
-enum TycoonScoreService {
+nonisolated enum TycoonScoreService {
     static func calculateTycoonScore(
         totalRevenue: Double,
         netWorth: Double,

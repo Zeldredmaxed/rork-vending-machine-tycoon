@@ -1,6 +1,6 @@
 import Foundation
 
-enum PayoutService {
+nonisolated enum PayoutService {
     static let houseRakePercent: Double = 0.15
     static let winnerPercentile: Double = 0.40
 

@@ -1,6 +1,6 @@
 import Foundation
 
-enum SampleData {
+nonisolated enum SampleData {
     static let products: [Product] = [
         Product(id: "p1", name: "Cola Classic", category: .soda, baseCost: 0.45, marketPrice: 0.52, priceDirection: .up, priceChangePercent: 8.2, expirationDays: 5, iconName: "drop.fill", demographicAffinityTags: ["cola", "high-sugar-soda", "soda"]),
         Product(id: "p2", name: "Lemon Fizz", category: .soda, baseCost: 0.40, marketPrice: 0.38, priceDirection: .down, priceChangePercent: 5.0, expirationDays: 5, iconName: "drop.fill", demographicAffinityTags: ["soda", "high-sugar-soda"]),

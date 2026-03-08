@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum AppTheme {
+nonisolated enum AppTheme {
     static let deepNavy = Color(red: 0.04, green: 0.06, blue: 0.12)
     static let charcoal = Color(red: 0.08, green: 0.1, blue: 0.15)
     static let charcoalLight = Color(red: 0.14, green: 0.16, blue: 0.22)
