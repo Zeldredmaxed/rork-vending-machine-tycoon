@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "name": "Vending Machine Tycoon",
+      "path": "ios",
+      "framework": "swift"
+    }
+  ]
+}
