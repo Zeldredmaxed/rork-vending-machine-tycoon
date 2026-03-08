@@ -30,7 +30,7 @@ struct MachineDetailView: View {
         .gameBackground()
         .navigationTitle(machine.name)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(AppTheme.charcoal.opacity(0.95), for: .navigationBar)
+        .toolbarBackground(AppTheme.charcoal, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .sheet(item: $selectedProduct) { product in

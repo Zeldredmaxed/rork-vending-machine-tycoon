@@ -40,7 +40,7 @@ struct PowerUpShopView: View {
                     }
                 }
             }
-            .toolbarBackground(AppTheme.charcoal.opacity(0.95), for: .navigationBar)
+            .toolbarBackground(AppTheme.charcoal, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .sheet(item: $previewPowerUp) { powerUp in

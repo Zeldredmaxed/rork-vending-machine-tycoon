@@ -45,7 +45,7 @@ struct CashOutView: View {
                     Button("Done") { dismiss() }
                 }
             }
-            .toolbarBackground(AppTheme.charcoal.opacity(0.95), for: .navigationBar)
+            .toolbarBackground(AppTheme.charcoal, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .alert("Confirm Withdrawal", isPresented: $showWithdrawConfirm) {

@@ -46,7 +46,7 @@ struct PracticeModeView: View {
                         .foregroundStyle(AppTheme.dimText)
                 }
             }
-            .toolbarBackground(AppTheme.charcoal.opacity(0.95), for: .navigationBar)
+            .toolbarBackground(AppTheme.charcoal, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .alert("Practice Mode", isPresented: $showDisclaimer) {

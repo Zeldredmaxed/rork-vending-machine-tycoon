@@ -60,7 +60,7 @@ struct DashboardView: View {
                     }
                 }
             }
-            .toolbarBackground(AppTheme.charcoal.opacity(0.9), for: .navigationBar)
+            .toolbarBackground(AppTheme.charcoal, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .sheet(isPresented: $showEventsFeed) {
