@@ -185,17 +185,25 @@ struct EventsFeedView: View {
     }
 
     private func eventTypeBadge(_ type: GameEventType) -> some View {
-        let config: (String, Color) = switch type {
-        case .transaction: ("TXN", AppTheme.electricGreen)
-        case .daily: ("LOCAL", .orange)
-        case .global: ("GLOBAL", Color.purple)
+        let label: String
+        let badgeColor: Color
+        switch type {
+        case .transaction:
+            label = "TXN"
+            badgeColor = AppTheme.electricGreen
+        case .daily:
+            label = "LOCAL"
+            badgeColor = .orange
+        case .global:
+            label = "GLOBAL"
+            badgeColor = Color.purple
         }
-        return Text(config.0)
+        return Text(label)
             .font(.system(size: 7, weight: .heavy))
-            .foregroundStyle(config.1)
+            .foregroundStyle(badgeColor)
             .padding(.horizontal, 5)
             .padding(.vertical, 2)
-            .background(config.1.opacity(0.12))
+            .background(badgeColor.opacity(0.12))
             .clipShape(Capsule())
     }
 

@@ -546,14 +546,16 @@ struct SeasonEndView: View {
         return visible
     }
 
+    private func payoutTierAccentColor(tier: PayoutTier, isPlayer: Bool) -> Color {
+        if isPlayer { return AppTheme.electricGreen }
+        if tier.rank == 1 { return AppTheme.gold }
+        if tier.rank <= 3 { return AppTheme.gold.opacity(0.7) }
+        if tier.isBreakEven { return AppTheme.neonCyan }
+        return AppTheme.softWhite
+    }
+
     private func payoutTierRow(tier: PayoutTier, isPlayer: Bool) -> some View {
-        let accentColor: Color = {
-            if isPlayer { return AppTheme.electricGreen }
-            if tier.rank == 1 { return AppTheme.gold }
-            if tier.rank <= 3 { return AppTheme.gold.opacity(0.7) }
-            if tier.isBreakEven { return AppTheme.neonCyan }
-            return AppTheme.softWhite
-        }()
+        let accentColor: Color = payoutTierAccentColor(tier: tier, isPlayer: isPlayer)
 
         return HStack(spacing: 10) {
             ZStack {

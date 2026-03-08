@@ -228,14 +228,18 @@ struct DashboardView: View {
         }
     }
 
+    private func businessTierColor(_ tier: BusinessTier) -> Color {
+        switch tier {
+        case .startup: return AppTheme.dimText
+        case .localOperator: return AppTheme.electricBlue
+        case .regionalManager: return AppTheme.gold
+        case .executive: return AppTheme.neonCyan
+        }
+    }
+
     private var businessTierCard: some View {
         let tier = viewModel.currentBusinessTier
-        let tierColor: Color = switch tier {
-        case .startup: AppTheme.dimText
-        case .localOperator: AppTheme.electricBlue
-        case .regionalManager: AppTheme.gold
-        case .executive: AppTheme.neonCyan
-        }
+        let tierColor: Color = businessTierColor(tier)
 
         return VStack(spacing: 12) {
             HStack {
