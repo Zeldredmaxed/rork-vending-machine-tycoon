@@ -477,6 +477,10 @@ struct PlaceMachineSheet: View {
     @State private var zoneCheckResult: (ZoneType, Bool)?
     @State private var isCheckingZone = false
 
+    private var isAtMachineCap: Bool {
+        !viewModel.canPlaceNewMachine
+    }
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 32) {
@@ -557,6 +561,55 @@ struct PlaceMachineSheet: View {
                         .padding(.top, 4)
                     }
                     .transition(.scale.combined(with: .opacity))
+                } else if isAtMachineCap {
+                    VStack(spacing: 12) {
+                        Image(systemName: "lock.fill")
+                            .font(.system(size: 48))
+                            .foregroundStyle(AppTheme.gold)
+                        Text("Machine Cap Reached")
+                            .font(.title2.bold())
+                            .foregroundStyle(AppTheme.gold)
+                        Text("You've reached your \(viewModel.currentBusinessTier.name) limit of \(viewModel.maxMachines) machine\(viewModel.maxMachines == 1 ? "" : "s").")
+                            .font(.subheadline)
+                            .foregroundStyle(AppTheme.dimText)
+                            .multilineTextAlignment(.center)
+
+                        if let next = viewModel.currentBusinessTier.nextTier {
+                            VStack(spacing: 8) {
+                                Text("Unlock \(next.name) for up to \(next.maxMachines) machines")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundStyle(AppTheme.softWhite)
+                                HStack(spacing: 16) {
+                                    VStack(spacing: 2) {
+                                        Text("Rep")
+                                            .font(.system(size: 9, weight: .heavy))
+                                            .foregroundStyle(AppTheme.dimText)
+                                        Text("\(Int(viewModel.player.reputation))/\(Int(next.requiredReputation))")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundStyle(viewModel.player.reputation >= next.requiredReputation ? AppTheme.electricGreen : AppTheme.gold)
+                                    }
+                                    VStack(spacing: 2) {
+                                        Text("Revenue")
+                                            .font(.system(size: 9, weight: .heavy))
+                                            .foregroundStyle(AppTheme.dimText)
+                                        Text("$\(Int(viewModel.player.totalRevenue))/$\(Int(next.requiredRevenue))")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundStyle(viewModel.player.totalRevenue >= next.requiredRevenue ? AppTheme.electricGreen : AppTheme.gold)
+                                    }
+                                }
+                            }
+                            .padding(14)
+                            .frame(maxWidth: .infinity)
+                            .background(AppTheme.gold.opacity(0.06))
+                            .clipShape(.rect(cornerRadius: 14))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 14)
+                                    .stroke(AppTheme.gold.opacity(0.2), lineWidth: 1)
+                            )
+                            .padding(.horizontal, 24)
+                        }
+                    }
+                    .transition(.scale.combined(with: .opacity))
                 } else {
                     VStack(spacing: 8) {
                         Text("Place Your Machine")
@@ -579,7 +632,19 @@ struct PlaceMachineSheet: View {
 
                 Spacer()
 
-                if zoneCheckResult != nil && !(zoneCheckResult?.1 ?? true) {
+                if isAtMachineCap && !showClaimed {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("Return to Map")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(AppTheme.gold)
+                    .padding(.horizontal, 24)
+                } else if zoneCheckResult != nil && !(zoneCheckResult?.1 ?? true) {
                     Button {
                         withAnimation(.spring) {
                             zoneCheckResult = nil

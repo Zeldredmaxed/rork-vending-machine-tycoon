@@ -129,6 +129,57 @@ extension SampleData {
         hoursOffline: 8.5
     )
 
+    static let sampleComplaints: [CustomerComplaint] = [
+        CustomerComplaint(
+            id: "cc1",
+            machineId: "m1",
+            machineName: "Downtown Hub",
+            productName: "Cola Classic",
+            refundAmount: 1.50,
+            customerName: "Alex T.",
+            complaintDescription: "I purchased a Cola Classic from Downtown Hub and it tasted flat and expired. I want my money back.",
+            createdAt: Date().addingTimeInterval(-3600 * 2),
+            expiresAt: Date().addingTimeInterval(3600 * 22),
+            resolution: .pending
+        ),
+        CustomerComplaint(
+            id: "cc2",
+            machineId: "m4",
+            machineName: "Brooklyn Bridge",
+            productName: "Protein Bar",
+            refundAmount: 2.50,
+            customerName: "Jordan M.",
+            complaintDescription: "The Protein Bar I got from Brooklyn Bridge was past its expiration date. Very disappointed.",
+            createdAt: Date().addingTimeInterval(-3600 * 8),
+            expiresAt: Date().addingTimeInterval(3600 * 16),
+            resolution: .pending
+        ),
+        CustomerComplaint(
+            id: "cc3",
+            machineId: "m2",
+            machineName: "Central Park East",
+            productName: "Cheese Puffs",
+            refundAmount: 1.25,
+            customerName: "Sam K.",
+            complaintDescription: "Cheese Puffs were stale and expired. This is unacceptable.",
+            createdAt: Date().addingTimeInterval(-86400 * 2),
+            expiresAt: Date().addingTimeInterval(-86400),
+            resolution: .refunded
+        ),
+        CustomerComplaint(
+            id: "cc4",
+            machineId: "m5",
+            machineName: "SoHo Corner",
+            productName: "Energy Rush",
+            refundAmount: 2.00,
+            customerName: "Casey R.",
+            complaintDescription: "Energy Rush can was expired by 2 days when I bought it.",
+            createdAt: Date().addingTimeInterval(-86400 * 3),
+            expiresAt: Date().addingTimeInterval(-86400 * 2),
+            resolution: .denied
+        ),
+    ]
+
     static let priceTrends: [String: [PriceTrendPoint]] = [
         "Cola Classic": (0..<24).map { h in
             PriceTrendPoint(id: "pt_cola_\(h)", hour: h, price: 0.52 + Double.random(in: -0.05...0.08))

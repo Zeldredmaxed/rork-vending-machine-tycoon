@@ -47,6 +47,9 @@ struct ContentView: View {
                     moreNavCard(icon: "bolt.shield.fill", title: "Power-Ups", subtitle: "Upgrade your machines", color: AppTheme.neonCyan) {
                         PowerUpShopView(viewModel: viewModel)
                     }
+                    moreNavCard(icon: "exclamationmark.bubble.fill", title: "Customer Service", subtitle: "\(viewModel.pendingComplaintCount) open complaints", color: viewModel.pendingComplaintCount > 0 ? AppTheme.neonRed : AppTheme.dimText) {
+                        CustomerServiceView(viewModel: viewModel)
+                    }
                     moreNavCard(icon: "person.crop.circle.fill", title: "Profile", subtitle: "Account, brand, and settings", color: AppTheme.electricGreen) {
                         ProfileView(viewModel: viewModel)
                     }

@@ -9,6 +9,7 @@ struct DashboardView: View {
     @State private var showSeasonLobby = false
     @State private var showSeasonEnd = false
     @State private var showMarketOverview = false
+    @State private var showCustomerService = false
     @State private var simulationTrigger = 0
 
     var body: some View {
@@ -18,7 +19,9 @@ struct DashboardView: View {
                     hudHeader
                         .padding(.bottom, 16)
                     VStack(spacing: 18) {
+                        businessTierCard
                         seasonBanner
+                        complaintsBanner
                         dailyReportCard
                         eventsFeedSection
                         quickActions
@@ -75,6 +78,11 @@ struct DashboardView: View {
             }
             .sheet(isPresented: $showMarketOverview) {
                 MarketOverviewView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $showCustomerService) {
+                NavigationStack {
+                    CustomerServiceView(viewModel: viewModel)
+                }
             }
             .sensoryFeedback(.impact(weight: .medium), trigger: simulationTrigger)
             .onAppear {
@@ -217,6 +225,162 @@ struct DashboardView: View {
             Text(label)
                 .font(.system(size: 9, weight: .medium))
                 .foregroundStyle(AppTheme.dimText)
+        }
+    }
+
+    private var businessTierCard: some View {
+        let tier = viewModel.currentBusinessTier
+        let tierColor: Color = switch tier {
+        case .startup: AppTheme.dimText
+        case .localOperator: AppTheme.electricBlue
+        case .regionalManager: AppTheme.gold
+        case .executive: AppTheme.neonCyan
+        }
+
+        return VStack(spacing: 12) {
+            HStack {
+                HStack(spacing: 8) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(tierColor.opacity(0.12))
+                            .frame(width: 36, height: 36)
+                        Image(systemName: tier.icon)
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(tierColor)
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("BUSINESS TIER")
+                            .font(.system(size: 9, weight: .heavy))
+                            .tracking(1)
+                            .foregroundStyle(AppTheme.dimText)
+                        Text(tier.name)
+                            .font(.subheadline.bold())
+                            .foregroundStyle(tierColor)
+                    }
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("Machines")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundStyle(AppTheme.dimText)
+                    Text("\(viewModel.machines.count)/\(tier.maxMachines)")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(AppTheme.softWhite)
+                }
+            }
+
+            if let next = tier.nextTier {
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("Next: \(next.name)")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(AppTheme.dimText)
+                        Spacer()
+                        HStack(spacing: 3) {
+                            Image(systemName: "questionmark.circle.fill")
+                                .font(.system(size: 10))
+                                .foregroundStyle(AppTheme.dimText)
+                        }
+                    }
+
+                    VStack(spacing: 6) {
+                        tierProgressRow(
+                            label: "Reputation",
+                            current: viewModel.player.reputation,
+                            target: next.requiredReputation,
+                            progress: viewModel.tierProgressReputation,
+                            color: AppTheme.gold
+                        )
+                        tierProgressRow(
+                            label: "Revenue",
+                            current: viewModel.player.totalRevenue,
+                            target: next.requiredRevenue,
+                            progress: viewModel.tierProgressRevenue,
+                            color: AppTheme.electricGreen
+                        )
+                    }
+                }
+            } else {
+                HStack(spacing: 6) {
+                    Image(systemName: "crown.fill")
+                        .font(.system(size: 11))
+                        .foregroundStyle(AppTheme.gold)
+                    Text("Maximum Tier Reached")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(AppTheme.gold)
+                }
+                .padding(.vertical, 4)
+            }
+        }
+        .padding(14)
+        .neonCardStyle(tierColor)
+        .opacity(animateCards ? 1 : 0)
+        .offset(y: animateCards ? 0 : 20)
+    }
+
+    private func tierProgressRow(label: String, current: Double, target: Double, progress: Double, color: Color) -> some View {
+        VStack(spacing: 3) {
+            HStack {
+                Text(label)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(AppTheme.dimText)
+                Spacer()
+                Text("\(Int(current))/\(Int(target))")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(progress >= 1.0 ? AppTheme.electricGreen : AppTheme.softWhite)
+            }
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(Color.white.opacity(0.06))
+                        .frame(height: 4)
+                    Capsule()
+                        .fill(color)
+                        .frame(width: geo.size.width * progress, height: 4)
+                }
+            }
+            .frame(height: 4)
+        }
+    }
+
+    private var complaintsBanner: some View {
+        Group {
+            if viewModel.pendingComplaintCount > 0 {
+                Button {
+                    showCustomerService = true
+                } label: {
+                    HStack(spacing: 10) {
+                        ZStack {
+                            Circle()
+                                .fill(AppTheme.neonRed.opacity(0.15))
+                                .frame(width: 32, height: 32)
+                            Image(systemName: "exclamationmark.bubble.fill")
+                                .font(.system(size: 13))
+                                .foregroundStyle(AppTheme.neonRed)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(viewModel.pendingComplaintCount) Customer Complaint\(viewModel.pendingComplaintCount > 1 ? "s" : "")")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(AppTheme.softWhite)
+                            Text("Respond within 24h or lose reputation")
+                                .font(.system(size: 10))
+                                .foregroundStyle(AppTheme.neonRed.opacity(0.8))
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(AppTheme.dimText)
+                    }
+                    .padding(12)
+                    .background(AppTheme.neonRed.opacity(0.06))
+                    .clipShape(.rect(cornerRadius: 14))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(AppTheme.neonRed.opacity(0.2), lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 
@@ -513,11 +677,11 @@ struct DashboardView: View {
                 ) { showSeasonLobby = true }
 
                 quickActionButton(
-                    icon: "shippingbox.fill",
-                    title: "Warehouse",
-                    subtitle: "Manage",
-                    color: AppTheme.electricGreen
-                ) { }
+                    icon: "exclamationmark.bubble.fill",
+                    title: "Service",
+                    subtitle: "\(viewModel.pendingComplaintCount) open",
+                    color: viewModel.pendingComplaintCount > 0 ? AppTheme.neonRed : AppTheme.dimText
+                ) { showCustomerService = true }
 
                 quickActionButton(
                     icon: "chart.line.uptrend.xyaxis",

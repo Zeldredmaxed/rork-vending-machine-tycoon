@@ -26,8 +26,8 @@ class GameViewModel {
     var notificationPreferences: [NotificationCategory: Bool] = NotificationCategory.allCases.reduce(into: [:]) { $0[$1] = true }
     var alliance: Alliance? = SampleData.sampleAlliance
     var isGeoRestricted = false
-    var leadershipCapacity: Int = 100
     var idleRecap: IdleRecapData? = SampleData.idleRecap
+    var customerComplaints: [CustomerComplaint] = SampleData.sampleComplaints
 
     var selectedMachine: VendingMachine?
     var showPlaceMachine = false
@@ -91,6 +91,145 @@ class GameViewModel {
 
     var unassignedEmployees: [Employee] {
         employees.filter { !$0.isAssigned }
+    }
+
+    // MARK: - Business Tier & Progression
+
+    var currentBusinessTier: BusinessTier {
+        BusinessTier.currentTier(reputation: player.reputation, revenue: player.totalRevenue)
+    }
+
+    var leadershipCapacity: Int {
+        currentBusinessTier.maxLeadershipCapacity
+    }
+
+    var maxMachines: Int {
+        currentBusinessTier.maxMachines
+    }
+
+    var canPlaceNewMachine: Bool {
+        machines.count < maxMachines
+    }
+
+    var tierProgressReputation: Double {
+        guard let next = currentBusinessTier.nextTier else { return 1.0 }
+        let current = currentBusinessTier.requiredReputation
+        let target = next.requiredReputation
+        let range = target - current
+        guard range > 0 else { return 1.0 }
+        return min(1.0, max(0.0, (player.reputation - current) / range))
+    }
+
+    var tierProgressRevenue: Double {
+        guard let next = currentBusinessTier.nextTier else { return 1.0 }
+        let current = currentBusinessTier.requiredRevenue
+        let target = next.requiredRevenue
+        let range = target - current
+        guard range > 0 else { return 1.0 }
+        return min(1.0, max(0.0, (player.totalRevenue - current) / range))
+    }
+
+    // MARK: - Customer Service
+
+    var pendingComplaints: [CustomerComplaint] {
+        customerComplaints.filter { $0.resolution == .pending && !$0.isExpired }
+    }
+
+    var pendingComplaintCount: Int {
+        pendingComplaints.count
+    }
+
+    func processExpiredComplaints() {
+        for i in customerComplaints.indices {
+            if customerComplaints[i].resolution == .pending && customerComplaints[i].isExpired {
+                customerComplaints[i].resolution = .expired
+                player.reputation = max(0, player.reputation - 5)
+                gameEvents.append(GameEvent(
+                    id: UUID().uuidString,
+                    type: .daily,
+                    severity: .negative,
+                    title: "Complaint Ignored",
+                    description: "A customer complaint about \(customerComplaints[i].productName) at \(customerComplaints[i].machineName) was ignored. -5 Reputation.",
+                    machineId: customerComplaints[i].machineId,
+                    machineName: customerComplaints[i].machineName,
+                    impactValue: -5,
+                    impactLabel: "-5 Rep",
+                    iconName: "exclamationmark.bubble.fill",
+                    timestamp: Date()
+                ))
+            }
+        }
+    }
+
+    func issueRefund(_ complaintId: String) {
+        guard let idx = customerComplaints.firstIndex(where: { $0.id == complaintId }) else { return }
+        let complaint = customerComplaints[idx]
+        guard complaint.resolution == .pending else { return }
+
+        player.competitionBucks -= complaint.refundAmount
+        player.totalExpenses += complaint.refundAmount
+        player.reputation = min(999, player.reputation + 1)
+        customerComplaints[idx].resolution = .refunded
+
+        gameEvents.append(GameEvent(
+            id: UUID().uuidString,
+            type: .transaction,
+            severity: .neutral,
+            title: "Refund Issued",
+            description: "Refunded \(Int(complaint.refundAmount)) VB for \(complaint.productName) at \(complaint.machineName). +1 Reputation.",
+            machineId: complaint.machineId,
+            machineName: complaint.machineName,
+            impactValue: -complaint.refundAmount,
+            impactLabel: "-\(Int(complaint.refundAmount)) VB",
+            iconName: "arrow.uturn.backward.circle.fill",
+            timestamp: Date()
+        ))
+    }
+
+    func denyRefund(_ complaintId: String) {
+        guard let idx = customerComplaints.firstIndex(where: { $0.id == complaintId }) else { return }
+        let complaint = customerComplaints[idx]
+        guard complaint.resolution == .pending else { return }
+
+        player.reputation = max(0, player.reputation - 5)
+        customerComplaints[idx].resolution = .denied
+
+        gameEvents.append(GameEvent(
+            id: UUID().uuidString,
+            type: .daily,
+            severity: .negative,
+            title: "Refund Denied",
+            description: "Denied refund for \(complaint.productName) at \(complaint.machineName). -5 Reputation.",
+            machineId: complaint.machineId,
+            machineName: complaint.machineName,
+            impactValue: -5,
+            impactLabel: "-5 Rep",
+            iconName: "xmark.circle.fill",
+            timestamp: Date()
+        ))
+    }
+
+    func generateComplaintForExpiredItems() {
+        for machine in machines {
+            for product in machine.products {
+                if product.expirationDate < Date() && product.stock > 0 {
+                    let names = ["Alex T.", "Jordan M.", "Sam K.", "Casey R.", "Taylor W.", "Morgan L."]
+                    let complaint = CustomerComplaint(
+                        id: UUID().uuidString,
+                        machineId: machine.id,
+                        machineName: machine.name,
+                        productName: product.product.name,
+                        refundAmount: product.sellingPrice,
+                        customerName: names.randomElement()!,
+                        complaintDescription: "I purchased \(product.product.name) from \(machine.name) and it was expired. I want a refund.",
+                        createdAt: Date(),
+                        expiresAt: Date().addingTimeInterval(24 * 3600),
+                        resolution: .pending
+                    )
+                    customerComplaints.insert(complaint, at: 0)
+                }
+            }
+        }
     }
 
     // MARK: - Dual Wallet
