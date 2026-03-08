@@ -49,17 +49,16 @@ struct OnboardingView: View {
                         .glow(AppTheme.electricGreen, radius: pulseGlow ? 14 : 6)
                 }
 
-                VStack(spacing: 8) {
-                    Text("VENDING MACHINE")
-                        .font(.system(size: 13, weight: .heavy))
-                        .tracking(4)
-                        .foregroundStyle(AppTheme.electricGreen)
-                    Text("TYCOON")
+                HStack(spacing: 0) {
+                    Text("Vend")
                         .font(.system(size: 42, weight: .black))
                         .foregroundStyle(AppTheme.softWhite)
+                    Text("FX")
+                        .font(.system(size: 42, weight: .black))
+                        .foregroundStyle(AppTheme.electricGreen)
                 }
 
-                Text("Build your vending empire.\nCompete for real prizes.")
+                Text("Real-money vending simulation.\nCompete. Strategize. Profit.")
                     .font(.subheadline)
                     .foregroundStyle(AppTheme.dimText)
                     .multilineTextAlignment(.center)

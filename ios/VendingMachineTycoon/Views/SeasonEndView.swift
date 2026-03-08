@@ -134,7 +134,7 @@ struct SeasonEndView: View {
                     Image(systemName: "target")
                         .font(.caption)
                         .foregroundStyle(AppTheme.gold)
-                    Text("Tycoon Score")
+                    Text("VFX Score")
                         .font(.headline)
                         .foregroundStyle(AppTheme.softWhite)
                 }
@@ -146,9 +146,9 @@ struct SeasonEndView: View {
                 }
                 .popover(isPresented: $showTycoonBreakdown) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Tycoon Score Breakdown")
+                        Text("VFX Score Breakdown")
                             .font(.headline)
-                        Text("Your Tycoon Score is a composite metric that determines your season ranking:\n\n• Financial (50%): Revenue and net worth performance\n• Operations (30%): Reputation from maintenance and customer satisfaction\n• Logistics (20%): Employee restock efficiency and minimal delays")
+                        Text("Your VFX Score is a composite metric that determines your season ranking:\n\n• Financial (50%): Revenue and net worth performance\n• Operations (30%): Reputation from maintenance and customer satisfaction\n• Logistics (20%): Employee restock efficiency and minimal delays")
                             .font(.subheadline)
                     }
                     .padding(16)
@@ -370,7 +370,7 @@ struct SeasonEndView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Prize Pool Distribution")
                             .font(.headline)
-                        Text("The top 40% of players ranked by Tycoon Score receive a payout. The 15% House Rake is deducted from total entry fees. Payouts scale exponentially — 1st place wins the most, while the last qualifying rank breaks even with their entry fee.")
+                        Text("The top 40% of players ranked by VFX Score receive a payout. The 15% House Rake is deducted from total entry fees. Payouts scale exponentially — 1st place wins the most, while the last qualifying rank breaks even with their entry fee.")
                             .font(.subheadline)
                     }
                     .padding(16)
@@ -696,7 +696,7 @@ struct SeasonEndView: View {
                         .foregroundStyle(AppTheme.softWhite)
 
                     let cutoff = result.payoutSummary.winnerCount
-                    Text("You placed \(ordinal(result.finalRank)) — the top \(Int(PayoutService.winnerPercentile * 100))% cutoff was rank \(cutoff). Your Tycoon Score still contributes to your ELO rating. Keep improving!")
+                    Text("You placed \(ordinal(result.finalRank)) — the top \(Int(PayoutService.winnerPercentile * 100))% cutoff was rank \(cutoff). Your VFX Score still contributes to your ELO rating. Keep improving!")
                         .font(.subheadline)
                         .foregroundStyle(AppTheme.dimText)
                         .multilineTextAlignment(.center)

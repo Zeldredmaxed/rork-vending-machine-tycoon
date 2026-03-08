@@ -273,7 +273,7 @@ struct GameMapView: View {
     private var machineStatusBar: some View {
         HStack(spacing: 16) {
             HStack(spacing: 6) {
-                Text("VENDING STATUS:")
+                Text("FLEET STATUS:")
                     .font(.system(size: 10, weight: .heavy))
                     .foregroundStyle(AppTheme.dimText)
                 Text("\(viewModel.healthyMachineCount)/\(viewModel.machines.count) Active")

@@ -67,7 +67,7 @@ struct BracketEntryView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Text("Compete against players in your ELO tier over 30 days. Build the most profitable vending empire to win real cash prizes.")
+            Text("Compete against players in your ELO tier over 30 days. Build the most profitable vending operation to win real cash prizes.")
                 .font(.subheadline)
                 .foregroundStyle(AppTheme.dimText)
 
@@ -117,7 +117,7 @@ struct BracketEntryView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Elo Multiplier")
                             .font(.headline)
-                        Text("Your ELO rating determines which bracket tier you compete in. Higher ELO means tougher competitors but potentially higher rewards. ELO is calculated from your Tycoon Score performance across seasons.")
+                        Text("Your ELO rating determines which bracket tier you compete in. Higher ELO means tougher competitors but potentially higher rewards. ELO is calculated from your VFX Score performance across seasons.")
                             .font(.subheadline)
                     }
                     .padding(16)
@@ -205,7 +205,7 @@ struct BracketEntryView: View {
                 breakdownRow(label: "Starting Capital", value: "50,000 VB", color: AppTheme.electricGreen, isBold: true)
                 Divider().background(AppTheme.cardBorder)
                 breakdownRow(label: "Bracket Size", value: "500 players", color: AppTheme.neonCyan, isBold: false)
-                breakdownRow(label: "Winning Metric", value: "Tycoon Score", color: AppTheme.gold, isBold: true)
+                breakdownRow(label: "Winning Metric", value: "VFX Score", color: AppTheme.gold, isBold: true)
                 breakdownRow(label: "Total Pool", value: "$25,000", color: AppTheme.softWhite, isBold: false)
 
                 HStack {
@@ -257,7 +257,7 @@ struct BracketEntryView: View {
                     .foregroundStyle(AppTheme.softWhite)
             }
 
-            Text("Ranked by Tycoon Score (Financial 50% + Operations 30% + Logistics 20%)")
+            Text("Ranked by VFX Score (Financial 50% + Operations 30% + Logistics 20%)")
                 .font(.system(size: 10))
                 .foregroundStyle(AppTheme.dimText)
 
@@ -372,7 +372,7 @@ struct BracketEntryView: View {
                     Image(systemName: skillAcknowledged ? "checkmark.square.fill" : "square")
                         .font(.title3)
                         .foregroundStyle(skillAcknowledged ? AppTheme.electricGreen : AppTheme.dimText)
-                    Text("I acknowledge that Vending Machine Tycoon is a game of skill, not a game of chance. My results depend on my strategic decisions, market analysis, and operational management.")
+                    Text("I acknowledge that VendFX is a game of skill, not a game of chance. My results depend on my strategic decisions, market analysis, and operational management.")
                         .font(.system(size: 12))
                         .foregroundStyle(AppTheme.softWhite)
                         .multilineTextAlignment(.leading)

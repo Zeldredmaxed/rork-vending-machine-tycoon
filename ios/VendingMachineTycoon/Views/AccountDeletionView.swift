@@ -98,7 +98,7 @@ struct AccountDeletionView: View {
             consequenceRow(icon: "dollarsign.circle.fill", text: "Competition Wallet balance (\(viewModel.formatVB(viewModel.player.competitionBucks)))", color: AppTheme.neonRed)
             consequenceRow(icon: "cabinet.fill", text: "All \(viewModel.machines.count) vending machines and inventory", color: AppTheme.neonRed)
             consequenceRow(icon: "person.3.fill", text: "All employees and HR records", color: AppTheme.neonRed)
-            consequenceRow(icon: "trophy.fill", text: "Leaderboard rankings and Tycoon Score", color: AppTheme.neonRed)
+            consequenceRow(icon: "trophy.fill", text: "Leaderboard rankings and VFX Score", color: AppTheme.neonRed)
             consequenceRow(icon: "paintbrush.fill", text: "Brand identity and cosmetics", color: AppTheme.neonRed)
             consequenceRow(icon: "shield.fill", text: "ELO rating and season history", color: AppTheme.neonRed)
             consequenceRow(icon: "person.crop.circle.fill", text: "Account credentials and profile", color: AppTheme.neonRed)

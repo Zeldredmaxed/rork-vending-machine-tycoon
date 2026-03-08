@@ -7,7 +7,7 @@ struct GlobalLeaderboardView: View {
     @State private var animateIn = false
     @State private var showScoreTooltip = false
 
-    private let sortOptions = ["Tycoon Score", "Net Worth", "Machines"]
+    private let sortOptions = ["VFX Score", "Net Worth", "Machines"]
 
     var body: some View {
         NavigationStack {
@@ -88,9 +88,9 @@ struct GlobalLeaderboardView: View {
                 }
                 .popover(isPresented: $showScoreTooltip) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Tycoon Score")
+                        Text("VFX Score")
                             .font(.headline)
-                        Text("Rankings are determined by Tycoon Score — a composite of:\n\n• Financial Success (50%)\n• Operational Smoothness (30%)\n• Logistical Efficiency (20%)\n\nTap any player's score to see their breakdown.")
+                        Text("Rankings are determined by VFX Score — a composite of:\n\n• Financial Success (50%)\n• Operational Smoothness (30%)\n• Logistical Efficiency (20%)\n\nTap any player's score to see their breakdown.")
                             .font(.subheadline)
                     }
                     .padding(16)
@@ -272,10 +272,10 @@ struct GlobalLeaderboardView: View {
 
     private func sortValue(for entry: LeaderboardEntry) -> String {
         switch selectedSort {
-        case 0: "\(entry.tycoonScore) TS"
+        case 0: "\(entry.tycoonScore) VFX"
         case 1: viewModel.formatCurrency(entry.netWorth)
         case 2: "\(entry.machineCount)"
-        default: "\(entry.tycoonScore) TS"
+        default: "\(entry.tycoonScore) VFX"
         }
     }
 

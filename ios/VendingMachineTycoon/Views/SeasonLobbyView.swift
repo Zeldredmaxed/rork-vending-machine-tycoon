@@ -458,7 +458,7 @@ struct SeasonLobbyView: View {
                 careerStatCard(icon: "calendar", title: "Seasons", value: "\(stats.seasonsPlayed)", color: AppTheme.neonCyan)
                 careerStatCard(icon: "trophy.fill", title: "Best Rank", value: "#\(stats.bestRank)", color: AppTheme.gold)
                 careerStatCard(icon: "chart.line.uptrend.xyaxis", title: "All-Time Revenue", value: viewModel.formatVB(stats.allTimeRevenue), color: AppTheme.electricGreen)
-                careerStatCard(icon: "target", title: "Best Tycoon Score", value: "\(stats.bestTycoonScore)", color: AppTheme.neonCyan)
+                careerStatCard(icon: "target", title: "Best VFX Score", value: "\(stats.bestTycoonScore)", color: AppTheme.neonCyan)
             }
 
             if let badge = stats.franchiseBadge {

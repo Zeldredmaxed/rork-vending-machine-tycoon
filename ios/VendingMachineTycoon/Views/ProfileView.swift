@@ -624,7 +624,7 @@ struct ProfileView: View {
 
                 if let tycoon = viewModel.player.tycoonScore {
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text("TYCOON")
+                        Text("VFX SCORE")
                             .font(.system(size: 8, weight: .heavy))
                             .foregroundStyle(AppTheme.gold.opacity(0.6))
                         Text("\(tycoon.totalScore)")

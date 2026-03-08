@@ -34,14 +34,15 @@ struct DashboardView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "building.2.fill")
-                            .font(.caption)
-                            .foregroundStyle(AppTheme.electricGreen)
-                        Text("VENDING TYCOON")
-                            .font(.system(size: 13, weight: .heavy, design: .default))
-                            .tracking(1.5)
+                    HStack(spacing: 2) {
+                        Text("VEND")
+                            .font(.system(size: 14, weight: .heavy))
+                            .tracking(1)
                             .foregroundStyle(AppTheme.softWhite)
+                        Text("FX")
+                            .font(.system(size: 14, weight: .heavy))
+                            .tracking(1)
+                            .foregroundStyle(AppTheme.electricGreen)
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
