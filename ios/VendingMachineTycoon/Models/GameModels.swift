@@ -153,6 +153,12 @@ nonisolated enum LocationReportStatus: String, Codable, Sendable {
     case dismissed = "Dismissed"
 }
 
+nonisolated enum FreshnessConstants {
+    static let standardExpirationDays: Int = 5
+    static let extraFreshExpirationDays: Int = 7
+    static let extraFreshChance: Double = 0.02
+}
+
 nonisolated struct Product: Identifiable, Codable, Sendable {
     let id: String
     let name: String
@@ -167,6 +173,10 @@ nonisolated struct Product: Identifiable, Codable, Sendable {
 
     var margin: Double {
         ((marketPrice - baseCost) / baseCost) * 100
+    }
+
+    var effectiveExpirationDays: Int {
+        min(expirationDays, FreshnessConstants.standardExpirationDays)
     }
 
     func affinityFor(profile: DemographicProfile) -> DemographicAffinity {

@@ -67,9 +67,10 @@ nonisolated struct WarehouseItem: Identifiable, Codable, Sendable {
     var quantity: Int
     let purchasePrice: Double
     let expirationDate: Date
+    var isExtraFresh: Bool = false
 
     var isExpiringSoon: Bool {
-        expirationDate.timeIntervalSinceNow < 86400 * 3
+        expirationDate.timeIntervalSinceNow < 86400 * 2
     }
 
     var isExpired: Bool {

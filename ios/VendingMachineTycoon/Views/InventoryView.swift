@@ -185,7 +185,7 @@ struct InventoryView: View {
                     HStack(spacing: 3) {
                         Image(systemName: "clock")
                             .font(.system(size: 8))
-                        Text("\(product.expirationDays)d")
+                        Text("\(product.effectiveExpirationDays)d")
                             .font(.system(size: 10, weight: .medium))
                     }
                     .foregroundStyle(AppTheme.dimText)
@@ -359,7 +359,7 @@ struct BulkPurchaseSheet: View {
                     HStack(spacing: 6) {
                         Image(systemName: "info.circle")
                             .font(.caption)
-                        Text("Expires in \(product.expirationDays) days")
+                        Text("Expires in \(product.effectiveExpirationDays) days (2% chance for 7d Extra Fresh)")
                             .font(.caption)
                     }
                     .foregroundStyle(AppTheme.dimText)

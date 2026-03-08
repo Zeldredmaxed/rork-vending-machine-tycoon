@@ -2,32 +2,32 @@ import Foundation
 
 enum SampleData {
     static let products: [Product] = [
-        Product(id: "p1", name: "Cola Classic", category: .soda, baseCost: 0.45, marketPrice: 0.52, priceDirection: .up, priceChangePercent: 8.2, expirationDays: 180, iconName: "drop.fill", demographicAffinityTags: ["cola", "high-sugar-soda", "soda"]),
-        Product(id: "p2", name: "Lemon Fizz", category: .soda, baseCost: 0.40, marketPrice: 0.38, priceDirection: .down, priceChangePercent: 5.0, expirationDays: 180, iconName: "drop.fill", demographicAffinityTags: ["soda", "high-sugar-soda"]),
-        Product(id: "p3", name: "Orange Burst", category: .soda, baseCost: 0.50, marketPrice: 0.55, priceDirection: .up, priceChangePercent: 10.0, expirationDays: 120, iconName: "drop.fill", demographicAffinityTags: ["soda", "juice"]),
-        Product(id: "p4", name: "Energy Rush", category: .soda, baseCost: 0.80, marketPrice: 0.82, priceDirection: .stable, priceChangePercent: 1.2, expirationDays: 240, iconName: "bolt.fill", demographicAffinityTags: ["energy-drink"]),
-        Product(id: "p5", name: "Sparkling Water", category: .soda, baseCost: 0.30, marketPrice: 0.28, priceDirection: .down, priceChangePercent: 6.7, expirationDays: 365, iconName: "drop.fill", demographicAffinityTags: ["sparkling-water", "water", "healthy"]),
-        Product(id: "p6", name: "Cheese Puffs", category: .snacks, baseCost: 0.35, marketPrice: 0.42, priceDirection: .up, priceChangePercent: 12.5, expirationDays: 90, iconName: "flame.fill", demographicAffinityTags: ["chips", "snacks"]),
-        Product(id: "p7", name: "Chocolate Bar", category: .snacks, baseCost: 0.60, marketPrice: 0.58, priceDirection: .down, priceChangePercent: 3.3, expirationDays: 120, iconName: "rectangle.fill", demographicAffinityTags: ["candy", "snacks"]),
-        Product(id: "p8", name: "Potato Chips", category: .snacks, baseCost: 0.40, marketPrice: 0.48, priceDirection: .up, priceChangePercent: 15.0, expirationDays: 90, iconName: "flame.fill", demographicAffinityTags: ["chips", "snacks"]),
-        Product(id: "p9", name: "Gummy Bears", category: .snacks, baseCost: 0.50, marketPrice: 0.50, priceDirection: .stable, priceChangePercent: 0.5, expirationDays: 180, iconName: "star.fill", demographicAffinityTags: ["candy", "snacks"]),
-        Product(id: "p10", name: "Trail Mix", category: .healthy, baseCost: 0.70, marketPrice: 0.82, priceDirection: .up, priceChangePercent: 14.2, expirationDays: 60, iconName: "leaf.fill", demographicAffinityTags: ["trail-mix", "healthy", "fruit"]),
-        Product(id: "p11", name: "Protein Bar", category: .healthy, baseCost: 0.90, marketPrice: 0.95, priceDirection: .up, priceChangePercent: 5.5, expirationDays: 120, iconName: "dumbbell.fill", demographicAffinityTags: ["protein-bar", "healthy"]),
-        Product(id: "p12", name: "Dried Fruit", category: .healthy, baseCost: 0.55, marketPrice: 0.50, priceDirection: .down, priceChangePercent: 9.1, expirationDays: 90, iconName: "leaf.fill", demographicAffinityTags: ["dried-fruit", "fruit", "healthy"]),
-        Product(id: "p13", name: "Veggie Sticks", category: .healthy, baseCost: 0.65, marketPrice: 0.72, priceDirection: .up, priceChangePercent: 10.7, expirationDays: 45, iconName: "carrot.fill", demographicAffinityTags: ["veggie", "healthy"]),
-        Product(id: "p14", name: "Coconut Water", category: .healthy, baseCost: 0.85, marketPrice: 0.88, priceDirection: .stable, priceChangePercent: 2.1, expirationDays: 150, iconName: "drop.fill", demographicAffinityTags: ["water", "healthy"]),
-        Product(id: "p15", name: "Milk Coffee", category: .soda, baseCost: 0.75, marketPrice: 0.80, priceDirection: .up, priceChangePercent: 6.5, expirationDays: 30, iconName: "cup.and.saucer.fill", demographicAffinityTags: ["milk-coffee", "coffee"]),
-        Product(id: "p16", name: "Green Tea", category: .healthy, baseCost: 0.60, marketPrice: 0.65, priceDirection: .up, priceChangePercent: 8.0, expirationDays: 120, iconName: "leaf.fill", demographicAffinityTags: ["green-tea", "healthy"]),
-        Product(id: "p17", name: "Hot Cheetos", category: .snacks, baseCost: 0.45, marketPrice: 0.55, priceDirection: .up, priceChangePercent: 18.0, expirationDays: 90, iconName: "flame.fill", demographicAffinityTags: ["hot-cheetos", "chips", "snacks"]),
+        Product(id: "p1", name: "Cola Classic", category: .soda, baseCost: 0.45, marketPrice: 0.52, priceDirection: .up, priceChangePercent: 8.2, expirationDays: 5, iconName: "drop.fill", demographicAffinityTags: ["cola", "high-sugar-soda", "soda"]),
+        Product(id: "p2", name: "Lemon Fizz", category: .soda, baseCost: 0.40, marketPrice: 0.38, priceDirection: .down, priceChangePercent: 5.0, expirationDays: 5, iconName: "drop.fill", demographicAffinityTags: ["soda", "high-sugar-soda"]),
+        Product(id: "p3", name: "Orange Burst", category: .soda, baseCost: 0.50, marketPrice: 0.55, priceDirection: .up, priceChangePercent: 10.0, expirationDays: 4, iconName: "drop.fill", demographicAffinityTags: ["soda", "juice"]),
+        Product(id: "p4", name: "Energy Rush", category: .soda, baseCost: 0.80, marketPrice: 0.82, priceDirection: .stable, priceChangePercent: 1.2, expirationDays: 5, iconName: "bolt.fill", demographicAffinityTags: ["energy-drink"]),
+        Product(id: "p5", name: "Sparkling Water", category: .soda, baseCost: 0.30, marketPrice: 0.28, priceDirection: .down, priceChangePercent: 6.7, expirationDays: 5, iconName: "drop.fill", demographicAffinityTags: ["sparkling-water", "water", "healthy"]),
+        Product(id: "p6", name: "Cheese Puffs", category: .snacks, baseCost: 0.35, marketPrice: 0.42, priceDirection: .up, priceChangePercent: 12.5, expirationDays: 5, iconName: "flame.fill", demographicAffinityTags: ["chips", "snacks"]),
+        Product(id: "p7", name: "Chocolate Bar", category: .snacks, baseCost: 0.60, marketPrice: 0.58, priceDirection: .down, priceChangePercent: 3.3, expirationDays: 4, iconName: "rectangle.fill", demographicAffinityTags: ["candy", "snacks"]),
+        Product(id: "p8", name: "Potato Chips", category: .snacks, baseCost: 0.40, marketPrice: 0.48, priceDirection: .up, priceChangePercent: 15.0, expirationDays: 5, iconName: "flame.fill", demographicAffinityTags: ["chips", "snacks"]),
+        Product(id: "p9", name: "Gummy Bears", category: .snacks, baseCost: 0.50, marketPrice: 0.50, priceDirection: .stable, priceChangePercent: 0.5, expirationDays: 5, iconName: "star.fill", demographicAffinityTags: ["candy", "snacks"]),
+        Product(id: "p10", name: "Trail Mix", category: .healthy, baseCost: 0.70, marketPrice: 0.82, priceDirection: .up, priceChangePercent: 14.2, expirationDays: 3, iconName: "leaf.fill", demographicAffinityTags: ["trail-mix", "healthy", "fruit"]),
+        Product(id: "p11", name: "Protein Bar", category: .healthy, baseCost: 0.90, marketPrice: 0.95, priceDirection: .up, priceChangePercent: 5.5, expirationDays: 5, iconName: "dumbbell.fill", demographicAffinityTags: ["protein-bar", "healthy"]),
+        Product(id: "p12", name: "Dried Fruit", category: .healthy, baseCost: 0.55, marketPrice: 0.50, priceDirection: .down, priceChangePercent: 9.1, expirationDays: 4, iconName: "leaf.fill", demographicAffinityTags: ["dried-fruit", "fruit", "healthy"]),
+        Product(id: "p13", name: "Veggie Sticks", category: .healthy, baseCost: 0.65, marketPrice: 0.72, priceDirection: .up, priceChangePercent: 10.7, expirationDays: 2, iconName: "carrot.fill", demographicAffinityTags: ["veggie", "healthy"]),
+        Product(id: "p14", name: "Coconut Water", category: .healthy, baseCost: 0.85, marketPrice: 0.88, priceDirection: .stable, priceChangePercent: 2.1, expirationDays: 5, iconName: "drop.fill", demographicAffinityTags: ["water", "healthy"]),
+        Product(id: "p15", name: "Milk Coffee", category: .soda, baseCost: 0.75, marketPrice: 0.80, priceDirection: .up, priceChangePercent: 6.5, expirationDays: 3, iconName: "cup.and.saucer.fill", demographicAffinityTags: ["milk-coffee", "coffee"]),
+        Product(id: "p16", name: "Green Tea", category: .healthy, baseCost: 0.60, marketPrice: 0.65, priceDirection: .up, priceChangePercent: 8.0, expirationDays: 5, iconName: "leaf.fill", demographicAffinityTags: ["green-tea", "healthy"]),
+        Product(id: "p17", name: "Hot Cheetos", category: .snacks, baseCost: 0.45, marketPrice: 0.55, priceDirection: .up, priceChangePercent: 18.0, expirationDays: 5, iconName: "flame.fill", demographicAffinityTags: ["hot-cheetos", "chips", "snacks"]),
     ]
 
     static let machineProducts: [VendingMachineProduct] = [
-        VendingMachineProduct(id: "vp1", product: products[0], stock: 18, maxStock: 30, sellingPrice: 1.50, expirationDate: Date().addingTimeInterval(86400 * 45)),
-        VendingMachineProduct(id: "vp2", product: products[5], stock: 5, maxStock: 25, sellingPrice: 1.25, expirationDate: Date().addingTimeInterval(86400 * 12)),
-        VendingMachineProduct(id: "vp3", product: products[7], stock: 22, maxStock: 25, sellingPrice: 1.75, expirationDate: Date().addingTimeInterval(86400 * 30)),
-        VendingMachineProduct(id: "vp4", product: products[10], stock: 8, maxStock: 20, sellingPrice: 2.50, expirationDate: Date().addingTimeInterval(86400 * 60)),
-        VendingMachineProduct(id: "vp5", product: products[3], stock: 2, maxStock: 20, sellingPrice: 2.00, expirationDate: Date().addingTimeInterval(86400 * 2)),
-        VendingMachineProduct(id: "vp6", product: products[13], stock: 15, maxStock: 20, sellingPrice: 2.25, expirationDate: Date().addingTimeInterval(86400 * 90)),
+        VendingMachineProduct(id: "vp1", product: products[0], stock: 18, maxStock: 30, sellingPrice: 1.50, expirationDate: Date().addingTimeInterval(86400 * 4)),
+        VendingMachineProduct(id: "vp2", product: products[5], stock: 5, maxStock: 25, sellingPrice: 1.25, expirationDate: Date().addingTimeInterval(86400 * 2)),
+        VendingMachineProduct(id: "vp3", product: products[7], stock: 22, maxStock: 25, sellingPrice: 1.75, expirationDate: Date().addingTimeInterval(86400 * 5)),
+        VendingMachineProduct(id: "vp4", product: products[10], stock: 8, maxStock: 20, sellingPrice: 2.50, expirationDate: Date().addingTimeInterval(86400 * 3)),
+        VendingMachineProduct(id: "vp5", product: products[3], stock: 2, maxStock: 20, sellingPrice: 2.00, expirationDate: Date().addingTimeInterval(86400 * 1)),
+        VendingMachineProduct(id: "vp6", product: products[13], stock: 15, maxStock: 20, sellingPrice: 2.25, expirationDate: Date().addingTimeInterval(86400 * 5)),
     ]
 
     static let powerUps: [PowerUp] = [
@@ -167,17 +167,17 @@ enum SampleData {
     ]
 
     static let warehouseItems: [WarehouseItem] = [
-        WarehouseItem(id: "w1", product: products[0], quantity: 120, purchasePrice: 0.52, expirationDate: Date().addingTimeInterval(86400 * 60)),
-        WarehouseItem(id: "w2", product: products[3], quantity: 80, purchasePrice: 0.82, expirationDate: Date().addingTimeInterval(86400 * 90)),
-        WarehouseItem(id: "w3", product: products[5], quantity: 200, purchasePrice: 0.42, expirationDate: Date().addingTimeInterval(86400 * 2)),
-        WarehouseItem(id: "w4", product: products[7], quantity: 150, purchasePrice: 0.48, expirationDate: Date().addingTimeInterval(86400 * 35)),
-        WarehouseItem(id: "w5", product: products[10], quantity: 60, purchasePrice: 0.95, expirationDate: Date().addingTimeInterval(86400 * 55)),
-        WarehouseItem(id: "w6", product: products[13], quantity: 40, purchasePrice: 0.88, expirationDate: Date().addingTimeInterval(86400 * 80)),
-        WarehouseItem(id: "w7", product: products[14], quantity: 90, purchasePrice: 0.80, expirationDate: Date().addingTimeInterval(86400 * 10)),
-        WarehouseItem(id: "w8", product: products[15], quantity: 75, purchasePrice: 0.65, expirationDate: Date().addingTimeInterval(86400 * 45)),
-        WarehouseItem(id: "w9", product: products[16], quantity: 180, purchasePrice: 0.55, expirationDate: Date().addingTimeInterval(86400 * 1)),
-        WarehouseItem(id: "w10", product: products[9], quantity: 45, purchasePrice: 0.82, expirationDate: Date().addingTimeInterval(86400 * 20)),
-        WarehouseItem(id: "w11", product: products[12], quantity: 30, purchasePrice: 0.72, expirationDate: Date().addingTimeInterval(86400 * 15)),
+        WarehouseItem(id: "w1", product: products[0], quantity: 120, purchasePrice: 0.52, expirationDate: Date().addingTimeInterval(86400 * 4)),
+        WarehouseItem(id: "w2", product: products[3], quantity: 80, purchasePrice: 0.82, expirationDate: Date().addingTimeInterval(86400 * 5)),
+        WarehouseItem(id: "w3", product: products[5], quantity: 200, purchasePrice: 0.42, expirationDate: Date().addingTimeInterval(86400 * 1)),
+        WarehouseItem(id: "w4", product: products[7], quantity: 150, purchasePrice: 0.48, expirationDate: Date().addingTimeInterval(86400 * 3)),
+        WarehouseItem(id: "w5", product: products[10], quantity: 60, purchasePrice: 0.95, expirationDate: Date().addingTimeInterval(86400 * 5)),
+        WarehouseItem(id: "w6", product: products[13], quantity: 40, purchasePrice: 0.88, expirationDate: Date().addingTimeInterval(86400 * 4)),
+        WarehouseItem(id: "w7", product: products[14], quantity: 90, purchasePrice: 0.80, expirationDate: Date().addingTimeInterval(86400 * 2)),
+        WarehouseItem(id: "w8", product: products[15], quantity: 75, purchasePrice: 0.65, expirationDate: Date().addingTimeInterval(86400 * 5)),
+        WarehouseItem(id: "w9", product: products[16], quantity: 180, purchasePrice: 0.55, expirationDate: Date().addingTimeInterval(86400 * 1), isExtraFresh: false),
+        WarehouseItem(id: "w10", product: products[9], quantity: 45, purchasePrice: 0.82, expirationDate: Date().addingTimeInterval(86400 * 3)),
+        WarehouseItem(id: "w11", product: products[12], quantity: 30, purchasePrice: 0.72, expirationDate: Date().addingTimeInterval(86400 * 7), isExtraFresh: true),
     ]
 
     static let employees: [Employee] = [

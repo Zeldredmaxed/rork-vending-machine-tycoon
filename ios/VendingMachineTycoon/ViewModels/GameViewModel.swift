@@ -107,10 +107,12 @@ class GameViewModel {
         player.competitionBucks -= cost
         player.totalExpenses += cost
 
-        let expirationDate = Date().addingTimeInterval(Double(product.expirationDays) * 86400)
+        let gotExtraFresh = Double.random(in: 0...1) < FreshnessConstants.extraFreshChance
+        let expirationDays = gotExtraFresh ? FreshnessConstants.extraFreshExpirationDays : product.effectiveExpirationDays
+        let expirationDate = Date().addingTimeInterval(Double(expirationDays) * 86400)
 
-        if let existingIndex = warehouseItems.firstIndex(where: {
-            $0.product.id == product.id && abs($0.purchasePrice - product.marketPrice) < 0.01
+        if !gotExtraFresh, let existingIndex = warehouseItems.firstIndex(where: {
+            $0.product.id == product.id && abs($0.purchasePrice - product.marketPrice) < 0.01 && !$0.isExtraFresh
         }) {
             warehouseItems[existingIndex].quantity += quantity
         } else {
@@ -119,9 +121,27 @@ class GameViewModel {
                 product: product,
                 quantity: quantity,
                 purchasePrice: product.marketPrice,
-                expirationDate: expirationDate
+                expirationDate: expirationDate,
+                isExtraFresh: gotExtraFresh
             )
             warehouseItems.append(item)
+        }
+
+        if gotExtraFresh {
+            let event = GameEvent(
+                id: UUID().uuidString,
+                type: .transaction,
+                severity: .positive,
+                title: "Extra Fresh Batch!",
+                description: "Lucky! Your \(product.name) shipment is extra fresh — expires in 7 days instead of 5.",
+                machineId: nil,
+                machineName: nil,
+                impactValue: 2,
+                impactLabel: "+2 days shelf life",
+                iconName: "sparkles",
+                timestamp: Date()
+            )
+            gameEvents.insert(event, at: 0)
         }
     }
 
@@ -158,7 +178,7 @@ class GameViewModel {
                 stock: allocateQty,
                 maxStock: allocateQty + 10,
                 sellingPrice: product.marketPrice * 2.2,
-                expirationDate: whItem?.expirationDate ?? Date().addingTimeInterval(86400 * 30)
+                expirationDate: whItem?.expirationDate ?? Date().addingTimeInterval(Double(FreshnessConstants.standardExpirationDays) * 86400)
             )
             machines[mIdx].products.append(vp)
         }
@@ -387,7 +407,7 @@ class GameViewModel {
                     stock: alloc.quantity,
                     maxStock: alloc.quantity + 10,
                     sellingPrice: alloc.product.marketPrice * 2.2,
-                    expirationDate: Date().addingTimeInterval(Double(alloc.product.expirationDays) * 86400)
+                    expirationDate: Date().addingTimeInterval(Double(alloc.product.effectiveExpirationDays) * 86400)
                 )
                 machines[mIdx].products.append(vp)
             }

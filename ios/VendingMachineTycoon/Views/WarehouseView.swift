@@ -202,6 +202,20 @@ struct WarehouseView: View {
                         .font(.system(size: 14))
                         .foregroundStyle(categoryColor(item.product.category))
                 }
+                if item.isExtraFresh {
+                    HStack(spacing: 3) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 8))
+                        Text("EXTRA FRESH")
+                            .font(.system(size: 7, weight: .heavy))
+                            .tracking(0.5)
+                    }
+                    .foregroundStyle(AppTheme.electricGreen)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(AppTheme.electricGreen.opacity(0.12))
+                    .clipShape(Capsule())
+                }
                 Spacer()
                 if item.isExpiringSoon {
                     Image(systemName: "exclamationmark.triangle.fill")
