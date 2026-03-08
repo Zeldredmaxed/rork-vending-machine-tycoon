@@ -8,6 +8,8 @@ struct SeasonEndView: View {
     @State private var showBreakdown = false
     @State private var showTycoonBreakdown = false
     @State private var glowPhase = false
+    @State private var showAllTiers = false
+    @State private var showPoolBreakdown = false
 
     private let result = SampleData.seasonResult
 
@@ -20,6 +22,8 @@ struct SeasonEndView: View {
                         tycoonScoreCard
                         financialReceipt
                         eloChangeCard
+                        payoutPoolCard
+                        payoutTierList
                         prizeSection
                         postGameActions
                     }
@@ -95,11 +99,25 @@ struct SeasonEndView: View {
                     Text("You placed \(ordinal(result.finalRank)) out of \(result.totalPlayers)!")
                         .font(.title3.bold())
                         .foregroundStyle(AppTheme.softWhite)
+
+                    let payout = result.payoutSummary
                     HStack(spacing: 8) {
                         Text("Season \(result.seasonNumber)")
                             .font(.subheadline)
                             .foregroundStyle(AppTheme.dimText)
                         tierBadge(result.eloBracketTier)
+                    }
+
+                    if result.isWinner {
+                        Text("Top \(Int(PayoutService.winnerPercentile * 100))% — You're in the money!")
+                            .font(.caption.bold())
+                            .foregroundStyle(AppTheme.electricGreen)
+                            .padding(.top, 2)
+                    } else {
+                        Text("Top \(Int(PayoutService.winnerPercentile * 100))% cutoff: Rank \(payout.winnerCount)")
+                            .font(.caption)
+                            .foregroundStyle(AppTheme.dimText)
+                            .padding(.top, 2)
                     }
                 }
                 .transition(.opacity)
@@ -328,6 +346,296 @@ struct SeasonEndView: View {
         }
     }
 
+    // MARK: - Prize Pool Breakdown
+
+    private var payoutPoolCard: some View {
+        let payout = result.payoutSummary
+        return VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                HStack(spacing: 6) {
+                    Image(systemName: "dollarsign.circle.fill")
+                        .font(.caption)
+                        .foregroundStyle(AppTheme.electricGreen)
+                    Text("Prize Pool Breakdown")
+                        .font(.headline)
+                        .foregroundStyle(AppTheme.softWhite)
+                }
+                Spacer()
+                Button { showPoolBreakdown.toggle() } label: {
+                    Image(systemName: "questionmark.circle.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(AppTheme.neonCyan)
+                }
+                .popover(isPresented: $showPoolBreakdown) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Prize Pool Distribution")
+                            .font(.headline)
+                        Text("The top 40% of players ranked by Tycoon Score receive a payout. The 15% House Rake is deducted from total entry fees. Payouts scale exponentially — 1st place wins the most, while the last qualifying rank breaks even with their entry fee.")
+                            .font(.subheadline)
+                    }
+                    .padding(16)
+                    .frame(width: 300)
+                    .presentationCompactAdaptation(.popover)
+                }
+            }
+
+            VStack(spacing: 10) {
+                poolDetailRow(
+                    label: "\(payout.totalPlayers) Players × \(viewModel.formatCurrency(payout.entryFee))",
+                    value: viewModel.formatCurrency(payout.totalEntryFees),
+                    color: AppTheme.softWhite
+                )
+                poolDetailRow(
+                    label: "House Rake (15%)",
+                    value: "- " + viewModel.formatCurrency(payout.houseRake),
+                    color: AppTheme.neonRed
+                )
+
+                Rectangle()
+                    .fill(AppTheme.electricGreen.opacity(0.3))
+                    .frame(height: 1)
+
+                HStack {
+                    Text("Total Prize Pool")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(AppTheme.softWhite)
+                    Spacer()
+                    Text(viewModel.formatCurrency(payout.prizePool))
+                        .font(.title3.bold())
+                        .foregroundStyle(AppTheme.electricGreen)
+                        .glow(AppTheme.electricGreen, radius: 4)
+                }
+
+                HStack(spacing: 4) {
+                    Image(systemName: "person.2.fill")
+                        .font(.system(size: 10))
+                    Text("\(payout.winnerCount) winners paid out of \(payout.totalPlayers) players")
+                        .font(.system(size: 11, weight: .medium))
+                }
+                .foregroundStyle(AppTheme.dimText)
+            }
+        }
+        .padding(16)
+        .neonCardStyle(AppTheme.electricGreen)
+        .opacity(animateRows ? 1 : 0)
+        .animation(.spring(response: 0.4).delay(1.0), value: animateRows)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+    }
+
+    private func poolDetailRow(label: String, value: String, color: Color) -> some View {
+        HStack {
+            Text(label)
+                .font(.subheadline)
+                .foregroundStyle(AppTheme.dimText)
+            Spacer()
+            Text(value)
+                .font(.subheadline.bold())
+                .foregroundStyle(color)
+        }
+    }
+
+    // MARK: - Payout Tier List
+
+    private var payoutTierList: some View {
+        let payout = result.payoutSummary
+        let displayTiers = showAllTiers ? payout.tiers : condensedTiers(from: payout)
+        let playerRank = payout.playerRank
+
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 6) {
+                Image(systemName: "list.number")
+                    .font(.caption)
+                    .foregroundStyle(AppTheme.gold)
+                Text("Payout Tiers")
+                    .font(.headline)
+                    .foregroundStyle(AppTheme.softWhite)
+                Spacer()
+                Text("\(payout.winnerCount) tiers")
+                    .font(.caption)
+                    .foregroundStyle(AppTheme.dimText)
+            }
+
+            if showAllTiers {
+                LazyVStack(spacing: 0) {
+                    ForEach(displayTiers) { tier in
+                        payoutTierRow(tier: tier, isPlayer: tier.rank == playerRank)
+                    }
+                }
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(displayTiers) { tier in
+                        if tier.rank == -1 {
+                            ellipsisRow(totalHidden: payout.winnerCount - condensedVisibleCount(payout))
+                        } else {
+                            payoutTierRow(tier: tier, isPlayer: tier.rank == playerRank)
+                        }
+                    }
+                }
+            }
+
+            Button {
+                withAnimation(.spring(response: 0.4)) { showAllTiers.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: showAllTiers ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 10, weight: .bold))
+                    Text(showAllTiers ? "Show Less" : "Show All \(payout.winnerCount) Tiers")
+                        .font(.system(size: 13, weight: .semibold))
+                }
+                .foregroundStyle(AppTheme.neonCyan)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+            }
+        }
+        .padding(16)
+        .background(
+            LinearGradient(
+                colors: [AppTheme.cardBackground, Color(red: 0.06, green: 0.07, blue: 0.12)],
+                startPoint: .top, endPoint: .bottom
+            )
+        )
+        .clipShape(.rect(cornerRadius: 16))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(AppTheme.gold.opacity(0.12), lineWidth: 1)
+        )
+        .opacity(animateRows ? 1 : 0)
+        .animation(.spring(response: 0.4).delay(1.2), value: animateRows)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+    }
+
+    private func condensedVisibleCount(_ payout: SeasonPayoutSummary) -> Int {
+        let topCount = 5
+        let bottomCount = 3
+        let playerIncluded = payout.playerRank > topCount && payout.playerRank <= payout.winnerCount - bottomCount
+        return topCount + bottomCount + (playerIncluded ? 3 : 0)
+    }
+
+    private func condensedTiers(from payout: SeasonPayoutSummary) -> [PayoutTier] {
+        let tiers = payout.tiers
+        guard tiers.count > 12 else { return tiers }
+
+        let topCount = 5
+        let bottomCount = 3
+        let playerRank = payout.playerRank
+
+        var visible: [PayoutTier] = []
+
+        let topTiers = Array(tiers.prefix(topCount))
+        visible.append(contentsOf: topTiers)
+
+        let playerInTop = playerRank <= topCount
+        let playerInBottom = playerRank > tiers.count - bottomCount
+
+        if !playerInTop && !playerInBottom && playerRank <= tiers.count {
+            visible.append(PayoutTier(rank: -1, payout: 0, percentOfPool: 0, isBreakEven: false))
+
+            let playerIdx = playerRank - 1
+            let contextStart = max(topCount, playerIdx - 1)
+            let contextEnd = min(tiers.count - bottomCount, playerIdx + 2)
+            for i in contextStart..<contextEnd {
+                visible.append(tiers[i])
+            }
+        }
+
+        visible.append(PayoutTier(rank: -1, payout: 0, percentOfPool: 0, isBreakEven: false))
+
+        let bottomTiers = Array(tiers.suffix(bottomCount))
+        visible.append(contentsOf: bottomTiers)
+
+        return visible
+    }
+
+    private func payoutTierRow(tier: PayoutTier, isPlayer: Bool) -> some View {
+        let accentColor: Color = {
+            if isPlayer { return AppTheme.electricGreen }
+            if tier.rank == 1 { return AppTheme.gold }
+            if tier.rank <= 3 { return AppTheme.gold.opacity(0.7) }
+            if tier.isBreakEven { return AppTheme.neonCyan }
+            return AppTheme.softWhite
+        }()
+
+        return HStack(spacing: 10) {
+            ZStack {
+                if tier.rank <= 3 {
+                    Circle()
+                        .fill(accentColor.opacity(0.12))
+                        .frame(width: 30, height: 30)
+                }
+                Text("\(tier.rank)")
+                    .font(.system(size: tier.rank <= 3 ? 14 : 12, weight: tier.rank <= 3 ? .black : .semibold, design: .monospaced))
+                    .foregroundStyle(accentColor)
+                    .frame(width: 30)
+            }
+
+            if isPlayer {
+                HStack(spacing: 4) {
+                    Image(systemName: "arrowtriangle.right.fill")
+                        .font(.system(size: 8))
+                    Text("YOU")
+                        .font(.system(size: 9, weight: .heavy))
+                        .tracking(0.5)
+                }
+                .foregroundStyle(AppTheme.electricGreen)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(AppTheme.electricGreen.opacity(0.12))
+                .clipShape(Capsule())
+            }
+
+            Spacer()
+
+            if tier.isBreakEven {
+                Text("BREAK EVEN")
+                    .font(.system(size: 8, weight: .heavy))
+                    .tracking(0.5)
+                    .foregroundStyle(AppTheme.neonCyan)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(AppTheme.neonCyan.opacity(0.1))
+                    .clipShape(Capsule())
+            }
+
+            Text(viewModel.formatCurrency(tier.payout))
+                .font(.system(size: 13, weight: isPlayer || tier.rank <= 3 ? .bold : .medium, design: .monospaced))
+                .foregroundStyle(accentColor)
+        }
+        .padding(.vertical, 7)
+        .padding(.horizontal, isPlayer ? 8 : 0)
+        .background(isPlayer ? AppTheme.electricGreen.opacity(0.05) : .clear)
+        .clipShape(.rect(cornerRadius: 8))
+        .overlay(
+            Group {
+                if tier.rank > 1 {
+                    VStack {
+                        Rectangle()
+                            .fill(AppTheme.cardBorder)
+                            .frame(height: 0.5)
+                        Spacer()
+                    }
+                }
+            }
+        )
+    }
+
+    private func ellipsisRow(totalHidden: Int) -> some View {
+        HStack {
+            Spacer()
+            VStack(spacing: 2) {
+                ForEach(0..<3, id: \.self) { _ in
+                    Circle()
+                        .fill(AppTheme.dimText.opacity(0.4))
+                        .frame(width: 3, height: 3)
+                }
+            }
+            .padding(.vertical, 4)
+            Spacer()
+        }
+        .padding(.vertical, 4)
+    }
+
+    // MARK: - Prize Section
+
     private var prizeSection: some View {
         Group {
             if result.isWinner, let prize = result.prizeAmount {
@@ -345,6 +653,12 @@ struct SeasonEndView: View {
                         .font(.system(size: 40, weight: .black))
                         .foregroundStyle(AppTheme.gold)
                         .glow(AppTheme.gold, radius: glowPhase ? 12 : 6)
+
+                    if let playerTier = result.payoutSummary.playerTier {
+                        Text("\(String(format: "%.1f", playerTier.percentOfPool))% of Prize Pool")
+                            .font(.caption)
+                            .foregroundStyle(AppTheme.dimText)
+                    }
 
                     Button {} label: {
                         HStack(spacing: 8) {
@@ -380,7 +694,9 @@ struct SeasonEndView: View {
                     Text("Great effort!")
                         .font(.title3.bold())
                         .foregroundStyle(AppTheme.softWhite)
-                    Text("You didn't place in the top 5 this season, but your Tycoon Score contributes to your ELO rating. Keep improving!")
+
+                    let cutoff = result.payoutSummary.winnerCount
+                    Text("You placed \(ordinal(result.finalRank)) — the top \(Int(PayoutService.winnerPercentile * 100))% cutoff was rank \(cutoff). Your Tycoon Score still contributes to your ELO rating. Keep improving!")
                         .font(.subheadline)
                         .foregroundStyle(AppTheme.dimText)
                         .multilineTextAlignment(.center)

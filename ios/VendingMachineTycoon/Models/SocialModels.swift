@@ -120,11 +120,13 @@ nonisolated struct SeasonResult: Codable, Sendable {
     let totalRevenue: Double
     let totalExpenses: Double
     let finalNetWorth: Double
-    let prizeAmount: Double?
-    let isWinner: Bool
     let tycoonScore: TycoonScore
     let eloBracketTier: EloBracketTier
     let eloChange: Int
+    let payoutSummary: SeasonPayoutSummary
+
+    var isWinner: Bool { payoutSummary.isPlayerWinner }
+    var prizeAmount: Double? { payoutSummary.playerPayout }
 }
 
 nonisolated struct CareerStats: Codable, Sendable {

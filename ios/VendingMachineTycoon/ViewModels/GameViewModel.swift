@@ -766,6 +766,16 @@ class GameViewModel {
     func simulateSeasonEnd() {
         calculateTycoonScore()
 
+        let payoutSummary = SeasonPayoutSummary.generate(
+            totalPlayers: seasonInfo.totalPlayers,
+            entryFee: seasonInfo.entryFee,
+            playerRank: player.rank
+        )
+
+        if let prizePayout = payoutSummary.playerPayout {
+            player.premiumBucks += prizePayout
+        }
+
         if let score = player.tycoonScore {
             let eloChange = TycoonScoreService.calculateEloChange(
                 currentElo: player.lifetimeElo,

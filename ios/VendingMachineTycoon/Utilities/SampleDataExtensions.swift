@@ -14,20 +14,26 @@ extension SampleData {
         eloBracketTier: .silver
     )
 
-    static let seasonResult = SeasonResult(
-        seasonNumber: 7,
-        finalRank: 2,
-        totalPlayers: 487,
-        startingCapital: 50_000,
-        totalRevenue: 15_840,
-        totalExpenses: 8_420,
-        finalNetWorth: 57_420,
-        prizeAmount: 2_656,
-        isWinner: true,
-        tycoonScore: TycoonScore(financialScore: 520, operationalScore: 310, logisticalScore: 195, totalScore: 1025),
-        eloBracketTier: .silver,
-        eloChange: 85
-    )
+    static let seasonResult: SeasonResult = {
+        let payoutSummary = SeasonPayoutSummary.generate(
+            totalPlayers: 487,
+            entryFee: 50.0,
+            playerRank: 2
+        )
+        return SeasonResult(
+            seasonNumber: 7,
+            finalRank: 2,
+            totalPlayers: 487,
+            startingCapital: 50_000,
+            totalRevenue: 15_840,
+            totalExpenses: 8_420,
+            finalNetWorth: 57_420,
+            tycoonScore: TycoonScore(financialScore: 520, operationalScore: 310, logisticalScore: 195, totalScore: 1025),
+            eloBracketTier: .silver,
+            eloChange: 85,
+            payoutSummary: payoutSummary
+        )
+    }()
 
     static let conversations: [ChatConversation] = [
         ChatConversation(id: "c1", participantName: "MegaVend", participantBrand: "MegaVend Empire", lastMessage: "Want to form a bulk buying alliance?", lastMessageTime: Date().addingTimeInterval(-1800), unreadCount: 2, isAlliance: false),
