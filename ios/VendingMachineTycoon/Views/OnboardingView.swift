@@ -204,7 +204,8 @@ struct OnboardingView: View {
                     if kycStatus == .notStarted {
                         Button {
                             withAnimation(.spring) { kycStatus = .pending }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            Task {
+                                try? await Task.sleep(for: .milliseconds(1500))
                                 withAnimation(.spring) { kycStatus = .approved }
                             }
                         } label: {

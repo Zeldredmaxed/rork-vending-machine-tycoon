@@ -670,7 +670,8 @@ struct PlaceMachineSheet: View {
                             }
                         } else {
                             withAnimation { isDropping = true }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                            Task {
+                                try? await Task.sleep(for: .milliseconds(600))
                                 withAnimation(.spring) {
                                     showClaimed = true
                                     shieldExpanding = true

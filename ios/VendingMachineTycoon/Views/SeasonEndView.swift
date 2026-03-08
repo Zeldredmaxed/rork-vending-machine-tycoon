@@ -50,14 +50,13 @@ struct SeasonEndView: View {
             .toolbarColorScheme(.dark, for: .navigationBar)
             .onAppear {
                 withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) { glowPhase = true }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                Task {
+                    try? await Task.sleep(for: .milliseconds(500))
                     withAnimation(.spring(response: 0.8, dampingFraction: 0.6)) { showRank = true }
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    try? await Task.sleep(for: .milliseconds(1000))
                     withAnimation(.spring(response: 0.5)) { showBreakdown = true }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        animateRows = true
-                    }
+                    try? await Task.sleep(for: .milliseconds(200))
+                    animateRows = true
                 }
             }
         }
