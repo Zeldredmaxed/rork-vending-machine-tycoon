@@ -1,9 +1,8 @@
 import { useRef, useEffect, useState, useCallback } from "react";
+import { SPRITE_URLS } from "@/lib/spriteUrls";
 
 // ============================================================================
 // INLINE PROCEDURAL ENGINE (mirrors server/engines/worldMap.ts)
-// This is a client-side copy for the demo — in production, the server generates
-// block data and sends it via tRPC.
 // ============================================================================
 
 function hashString(str: string): number {
@@ -105,60 +104,139 @@ function getDistrictType(lat: number, lng: number): DistrictType {
 }
 
 // ============================================================================
-// SPRITE COLORS — isometric representations
+// SPRITE IMAGE LOADER & CACHE
 // ============================================================================
 
-const BUILDING_COLORS: Record<string, { top: string; left: string; right: string; accent: string }> = {
-  office_skyscraper:      { top: "#2a4a6a", left: "#1a3a5a", right: "#0a2a4a", accent: "#00d4ff" },
-  residential_apartment:  { top: "#3a4a3a", left: "#2a3a2a", right: "#1a2a1a", accent: "#ffcc00" },
-  neon_retail_strip_mall: { top: "#4a2a4a", left: "#3a1a3a", right: "#2a0a2a", accent: "#ff00ff" },
-  subway_transit_station: { top: "#2a3a4a", left: "#1a2a3a", right: "#0a1a2a", accent: "#00ffcc" },
-  industrial_factory:     { top: "#4a3a2a", left: "#3a2a1a", right: "#2a1a0a", accent: "#ff6600" },
-  public_park_plaza:      { top: "#2a5a2a", left: "#1a4a1a", right: "#0a3a0a", accent: "#66ff66" },
+const imageCache = new Map<string, HTMLImageElement>();
+const loadingImages = new Map<string, Promise<HTMLImageElement>>();
+
+function loadImage(url: string): Promise<HTMLImageElement> {
+  if (imageCache.has(url)) return Promise.resolve(imageCache.get(url)!);
+  if (loadingImages.has(url)) return loadingImages.get(url)!;
+
+  const promise = new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      imageCache.set(url, img);
+      loadingImages.delete(url);
+      resolve(img);
+    };
+    img.onerror = () => {
+      loadingImages.delete(url);
+      reject(new Error(`Failed to load: ${url}`));
+    };
+    img.src = url;
+  });
+  loadingImages.set(url, promise);
+  return promise;
+}
+
+function getImage(url: string): HTMLImageElement | null {
+  return imageCache.get(url) || null;
+}
+
+// Sprite URL lookup helpers
+const BUILDING_SPRITE_MAP: Record<string, string> = {
+  office_skyscraper: SPRITE_URLS.city_buildings["01_office_skyscraper"],
+  residential_apartment: SPRITE_URLS.city_buildings["02_residential_apartment"],
+  neon_retail_strip_mall: SPRITE_URLS.city_buildings["03_neon_retail_strip_mall"],
+  subway_transit_station: SPRITE_URLS.city_buildings["04_subway_transit_station"],
+  industrial_factory: SPRITE_URLS.city_buildings["05_industrial_factory"],
+  public_park_plaza: SPRITE_URLS.city_buildings["06_public_park_plaza"],
 };
 
-const ROAD_COLOR = "#2a2a3a";
-const ROAD_LINE = "#4a6a8a";
-const SIDEWALK_COLOR = "#3a3a4a";
-
-const NPC_COLORS = ["#00d4ff", "#ff00ff", "#ffcc00", "#ff6600", "#66ff66", "#ff3366", "#9966ff"];
-const VEHICLE_COLORS = ["#0066ff", "#ff3300", "#9933ff", "#00cc66", "#ff9900"];
-
-const SUPPLIER_COLORS: Record<string, string> = {
-  sugar_rush: "#ff66ff",
-  liquid_oasis: "#6666ff",
-  fresh_farm: "#66ff66",
-  tech_mech: "#ff6633",
-  arctic_chill: "#66ffff",
-  mega_mart_hq: "#ffcc00",
-  black_market_alley: "#ff0000",
+const SUPPLIER_SPRITE_MAP: Record<string, string> = {
+  sugar_rush: SPRITE_URLS.suppliers["01_sugar_rush"],
+  liquid_oasis: SPRITE_URLS.suppliers["02_liquid_oasis"],
+  fresh_farm: SPRITE_URLS.suppliers["03_fresh_farm"],
+  tech_mech: SPRITE_URLS.suppliers["04_tech_mech"],
+  arctic_chill: SPRITE_URLS.suppliers["05_arctic_chill"],
+  mega_mart_hq: SPRITE_URLS.suppliers["06_mega_mart_hq"],
+  black_market_alley: SPRITE_URLS.suppliers["07_black_market_alley"],
 };
 
-const VM_COLORS: Record<string, string> = {
-  classic_beverage: "#3366ff",
-  glass_front_snack: "#ff9933",
-  combo_unit: "#9933ff",
-  healthy_organic: "#33cc33",
-  coffee_espresso: "#cc6600",
-  hot_food_noodle: "#ff3300",
-  ice_cream_frozen: "#66ccff",
-  electronics: "#333333",
-  pharmacy_otc: "#ffffff",
-  gacha_capsule: "#ff66cc",
-  mega_vendor: "#00ffcc",
-  abandoned_rusted: "#666633",
+const VM_SPRITE_MAP: Record<string, string> = {
+  classic_beverage: SPRITE_URLS.vending_machines["01_classic_beverage"],
+  glass_front_snack: SPRITE_URLS.vending_machines["02_glass_front_snack"],
+  combo_unit: SPRITE_URLS.vending_machines["03_combo_unit"],
+  healthy_organic: SPRITE_URLS.vending_machines["04_healthy_organic"],
+  coffee_espresso: SPRITE_URLS.vending_machines["05_coffee_espresso"],
+  hot_food_noodle: SPRITE_URLS.vending_machines["06_hot_food_noodle"],
+  ice_cream_frozen: SPRITE_URLS.vending_machines["07_ice_cream_frozen"],
+  electronics: SPRITE_URLS.vending_machines["08_electronics"],
+  pharmacy_otc: SPRITE_URLS.vending_machines["09_pharmacy_otc"],
+  gacha_capsule: SPRITE_URLS.vending_machines["10_gacha_capsule"],
+  mega_vendor: SPRITE_URLS.vending_machines["11_mega_vendor"],
+  abandoned_rusted: SPRITE_URLS.vending_machines["12_abandoned_rusted"],
 };
+
+const PROP_SPRITE_MAP: Record<string, string> = {
+  streetlight: SPRITE_URLS.city_props["05_streetlight"],
+  tree: SPRITE_URLS.city_props["06_tree_planter"],
+  bench: SPRITE_URLS.city_props["08_park_bench"],
+  bus_stop: SPRITE_URLS.city_props["07_bus_stop"],
+};
+
+const ROAD_SPRITE_MAP: Record<string, string> = {
+  road_h: SPRITE_URLS.city_props["01_road_straight"],
+  road_v: SPRITE_URLS.city_props["01_road_straight"],
+  intersection: SPRITE_URLS.city_props["02_road_4way"],
+};
+
+const NPC_SPRITES = [
+  SPRITE_URLS.characters["04_npc_male_trenchcoat"],
+  SPRITE_URLS.characters["05_npc_female_neon"],
+  SPRITE_URLS.characters["08_npc_businessman"],
+  SPRITE_URLS.characters["09_npc_jogger"],
+  SPRITE_URLS.characters["10_npc_street_musician"],
+  SPRITE_URLS.characters["11_npc_security_guard"],
+];
+
+const WORKER_SPRITES = [
+  SPRITE_URLS.characters["01_delivery_worker"],
+  SPRITE_URLS.characters["02_mechanic"],
+  SPRITE_URLS.characters["03_angry_worker"],
+];
+
+const VEHICLE_SPRITES = [
+  SPRITE_URLS.vehicles["01_hr_compact_car"],
+  SPRITE_URLS.vehicles["02_hr_delivery_van"],
+  SPRITE_URLS.vehicles["04_civilian_sedan"],
+  SPRITE_URLS.vehicles["05_civilian_coupe"],
+];
+
+const TRUCK_SPRITE = SPRITE_URLS.vehicles["03_fleet_box_truck"];
+const DRONE_SPRITE = SPRITE_URLS.vehicles["06_drone_active"];
+
+// Preload all sprites
+function preloadAllSprites(): Promise<void> {
+  const allUrls = [
+    ...Object.values(BUILDING_SPRITE_MAP),
+    ...Object.values(SUPPLIER_SPRITE_MAP),
+    ...Object.values(VM_SPRITE_MAP),
+    ...Object.values(PROP_SPRITE_MAP),
+    ...Object.values(ROAD_SPRITE_MAP),
+    ...NPC_SPRITES,
+    ...WORKER_SPRITES,
+    ...VEHICLE_SPRITES,
+    TRUCK_SPRITE,
+    DRONE_SPRITE,
+  ];
+  return Promise.allSettled(allUrls.map(loadImage)).then(() => {});
+}
 
 // ============================================================================
-// GENERATION FUNCTIONS
+// GENERATION FUNCTIONS (same logic as before)
 // ============================================================================
 
 interface RoadTile { x: number; y: number; type: string; }
 interface Building { x: number; y: number; type: string; w: number; h: number; floors: number; }
 interface Prop { x: number; y: number; type: string; }
-interface Npc { x: number; y: number; color: string; walkDir: number; }
-interface Vehicle { x: number; y: number; color: string; dir: number; }
+interface Npc { x: number; y: number; spriteUrl: string; walkDir: number; isWorker: boolean; }
+interface Vehicle { x: number; y: number; spriteUrl: string; dir: number; scale: number; }
 interface Supplier { x: number; y: number; type: string; isBlackMarket: boolean; }
+interface VendingMachine { x: number; y: number; type: string; }
 interface Block {
   roads: RoadTile[];
   buildings: Building[];
@@ -166,6 +244,7 @@ interface Block {
   npcs: Npc[];
   vehicles: Vehicle[];
   suppliers: Supplier[];
+  vendingMachines: VendingMachine[];
   districtType: DistrictType;
   blockLat: number;
   blockLng: number;
@@ -178,35 +257,24 @@ function generateRoads(lat: number, lng: number): RoadTile[] {
   const roadRows = new Set<number>();
   const roadCols = new Set<number>();
 
-  // Always have border roads
   roadRows.add(0);
   roadRows.add(GRID - 1);
   roadCols.add(0);
   roadCols.add(GRID - 1);
 
-  // Add 1-2 internal roads
   const internalH = 1 + Math.floor(rng() * 2);
   const internalV = 1 + Math.floor(rng() * 2);
-  for (let i = 0; i < internalH; i++) {
-    roadRows.add(3 + Math.floor(rng() * 6));
-  }
-  for (let i = 0; i < internalV; i++) {
-    roadCols.add(3 + Math.floor(rng() * 6));
-  }
+  for (let i = 0; i < internalH; i++) roadRows.add(3 + Math.floor(rng() * 6));
+  for (let i = 0; i < internalV; i++) roadCols.add(3 + Math.floor(rng() * 6));
 
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
       const isH = roadRows.has(y);
       const isV = roadCols.has(x);
-      if (isH && isV) {
-        tiles.push({ x, y, type: "intersection" });
-      } else if (isH) {
-        tiles.push({ x, y, type: "road_h" });
-      } else if (isV) {
-        tiles.push({ x, y, type: "road_v" });
-      } else {
-        tiles.push({ x, y, type: "empty" });
-      }
+      if (isH && isV) tiles.push({ x, y, type: "intersection" });
+      else if (isH) tiles.push({ x, y, type: "road_h" });
+      else if (isV) tiles.push({ x, y, type: "road_v" });
+      else tiles.push({ x, y, type: "empty" });
     }
   }
   return tiles;
@@ -218,11 +286,10 @@ function generateBuildings(lat: number, lng: number, seasonId: number, config: D
   const buildings: Building[] = [];
   const occupied = new Set(roads.filter(r => r.type !== "empty").map(r => `${r.x},${r.y}`));
 
-  // Find empty zones and place buildings
   for (let y = 1; y < GRID - 1; y += 2) {
     for (let x = 1; x < GRID - 1; x += 2) {
       if (occupied.has(`${x},${y}`)) continue;
-      if (rng() < 0.15) continue; // Some empty lots
+      if (rng() < 0.15) continue;
 
       const type = config.buildingPool[Math.floor(rng() * config.buildingPool.length)];
       const w = type === "neon_retail_strip_mall" ? 2 : 1;
@@ -231,7 +298,6 @@ function generateBuildings(lat: number, lng: number, seasonId: number, config: D
                      type === "residential_apartment" ? 2 + Math.floor(rng() * 3) :
                      type === "industrial_factory" ? 1 + Math.floor(rng() * 2) : 1;
 
-      // Check all tiles are free
       let canPlace = true;
       for (let dy = 0; dy < h; dy++) {
         for (let dx = 0; dx < w; dx++) {
@@ -263,7 +329,6 @@ function generateProps(lat: number, lng: number, config: DistrictConfig, roads: 
     if (!roadTile) continue;
     const types = ["streetlight", "tree", "bench", "bus_stop"];
     const type = types[Math.floor(rng() * types.length)];
-    // Place adjacent to road
     const offX = rng() < 0.5 ? -0.3 : 0.3;
     const offY = rng() < 0.5 ? -0.3 : 0.3;
     props.push({ x: roadTile.x + offX, y: roadTile.y + offY, type });
@@ -281,11 +346,16 @@ function generateNpcs(lat: number, lng: number, seasonId: number, config: Distri
   for (let i = 0; i < count; i++) {
     const tile = roadPositions[Math.floor(rng() * roadPositions.length)];
     if (!tile) continue;
+    const isWorker = rng() < 0.15;
+    const spriteUrl = isWorker
+      ? WORKER_SPRITES[Math.floor(rng() * WORKER_SPRITES.length)]
+      : NPC_SPRITES[Math.floor(rng() * NPC_SPRITES.length)];
     npcs.push({
       x: tile.x + (rng() - 0.5) * 0.6,
       y: tile.y + (rng() - 0.5) * 0.6,
-      color: NPC_COLORS[Math.floor(rng() * NPC_COLORS.length)],
+      spriteUrl,
       walkDir: rng() * 360,
+      isWorker,
     });
   }
   return npcs;
@@ -301,11 +371,18 @@ function generateVehicles(lat: number, lng: number, seasonId: number, config: Di
   for (let i = 0; i < count; i++) {
     const tile = roadPositions[Math.floor(rng() * roadPositions.length)];
     if (!tile) continue;
+    const roll = rng();
+    let spriteUrl: string;
+    let scale = 1.0;
+    if (roll < 0.05) { spriteUrl = DRONE_SPRITE; scale = 0.7; }
+    else if (roll < 0.15) { spriteUrl = TRUCK_SPRITE; scale = 1.2; }
+    else { spriteUrl = VEHICLE_SPRITES[Math.floor(rng() * VEHICLE_SPRITES.length)]; }
     vehicles.push({
       x: tile.x + (rng() - 0.5) * 0.3,
       y: tile.y + (rng() - 0.5) * 0.3,
-      color: VEHICLE_COLORS[Math.floor(rng() * VEHICLE_COLORS.length)],
+      spriteUrl,
       dir: tile.type === "road_h" ? (rng() < 0.5 ? 0 : 180) : (rng() < 0.5 ? 90 : 270),
+      scale,
     });
   }
   return vehicles;
@@ -338,6 +415,26 @@ function generateSuppliers(lat: number, lng: number, seasonId: number): Supplier
   return suppliers;
 }
 
+function generateVendingMachines(lat: number, lng: number, seasonId: number, config: DistrictConfig, roads: RoadTile[]): VendingMachine[] {
+  const seed = seasonalSeed(lat, lng, seasonId);
+  const rng = createSeededRng(seed + 1111);
+  const vms: VendingMachine[] = [];
+  const vmCount = Math.floor(config.vendingDemand * (1 + rng() * 2));
+  const roadPositions = roads.filter(r => r.type !== "empty");
+  const vmTypes = Object.keys(VM_SPRITE_MAP);
+
+  for (let i = 0; i < vmCount; i++) {
+    const tile = roadPositions[Math.floor(rng() * roadPositions.length)];
+    if (!tile) continue;
+    vms.push({
+      x: tile.x + (rng() < 0.5 ? -0.4 : 0.4),
+      y: tile.y + (rng() < 0.5 ? -0.4 : 0.4),
+      type: vmTypes[Math.floor(rng() * vmTypes.length)],
+    });
+  }
+  return vms;
+}
+
 function generateBlock(lat: number, lng: number, seasonId: number): Block {
   const districtType = getDistrictType(lat, lng);
   const config = DISTRICTS[districtType];
@@ -347,9 +444,10 @@ function generateBlock(lat: number, lng: number, seasonId: number): Block {
   const npcs = generateNpcs(lat, lng, seasonId, config, roads);
   const vehicles = generateVehicles(lat, lng, seasonId, config, roads);
   const suppliers = generateSuppliers(lat, lng, seasonId);
+  const vendingMachines = generateVendingMachines(lat, lng, seasonId, config, roads);
 
   return {
-    roads, buildings, props, npcs, vehicles, suppliers,
+    roads, buildings, props, npcs, vehicles, suppliers, vendingMachines,
     districtType,
     blockLat: Math.floor(lat * 1000),
     blockLng: Math.floor(lng * 1000),
@@ -357,7 +455,7 @@ function generateBlock(lat: number, lng: number, seasonId: number): Block {
 }
 
 // ============================================================================
-// ISOMETRIC RENDERER
+// ISOMETRIC RENDERER WITH REAL SPRITES
 // ============================================================================
 
 const TILE_W = 64;
@@ -381,41 +479,6 @@ function drawIsoDiamond(ctx: CanvasRenderingContext2D, cx: number, cy: number, w
   ctx.fill();
 }
 
-function drawIsoBox(ctx: CanvasRenderingContext2D, cx: number, cy: number, w: number, d: number, h: number, colors: { top: string; left: string; right: string }) {
-  const hw = w / 2;
-  const hd = d / 2;
-
-  // Right face
-  ctx.fillStyle = colors.right;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy);
-  ctx.lineTo(cx + hw, cy - hd);
-  ctx.lineTo(cx + hw, cy - hd - h);
-  ctx.lineTo(cx, cy - h);
-  ctx.closePath();
-  ctx.fill();
-
-  // Left face
-  ctx.fillStyle = colors.left;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy);
-  ctx.lineTo(cx - hw, cy - hd);
-  ctx.lineTo(cx - hw, cy - hd - h);
-  ctx.lineTo(cx, cy - h);
-  ctx.closePath();
-  ctx.fill();
-
-  // Top face
-  ctx.fillStyle = colors.top;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - h);
-  ctx.lineTo(cx + hw, cy - hd - h);
-  ctx.lineTo(cx, cy - d - h);
-  ctx.lineTo(cx - hw, cy - hd - h);
-  ctx.closePath();
-  ctx.fill();
-}
-
 function drawGlowCircle(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, color: string) {
   const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
   gradient.addColorStop(0, color);
@@ -426,74 +489,89 @@ function drawGlowCircle(ctx: CanvasRenderingContext2D, cx: number, cy: number, r
   ctx.fill();
 }
 
+/** Draw a sprite image centered at (cx, cy) with given width, maintaining aspect ratio */
+function drawSprite(
+  ctx: CanvasRenderingContext2D,
+  url: string,
+  cx: number,
+  cy: number,
+  targetWidth: number,
+  offsetY = 0,
+  flipH = false,
+) {
+  const img = getImage(url);
+  if (!img) return; // Not loaded yet — will render on next frame
+
+  const aspect = img.height / img.width;
+  const w = targetWidth;
+  const h = w * aspect;
+  const x = cx - w / 2;
+  const y = cy - h + offsetY;
+
+  if (flipH) {
+    ctx.save();
+    ctx.translate(cx, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(img, -w / 2, y, w, h);
+    ctx.restore();
+  } else {
+    ctx.drawImage(img, x, y, w, h);
+  }
+}
+
 function renderBlock(ctx: CanvasRenderingContext2D, block: Block, offsetX: number, offsetY: number) {
   const config = DISTRICTS[block.districtType];
 
-  // Layer 1: Ground
+  // Layer 1: Ground tiles
   for (const tile of block.roads) {
     const [ix, iy] = toIso(tile.x, tile.y);
     const sx = offsetX + ix;
     const sy = offsetY + iy;
 
     if (tile.type === "empty") {
+      // Ground fill for non-road tiles
       drawIsoDiamond(ctx, sx, sy, TILE_W, TILE_H, config.color);
-    } else if (tile.type === "intersection") {
-      drawIsoDiamond(ctx, sx, sy, TILE_W, TILE_H, ROAD_COLOR);
-      // Crosswalk lines
-      ctx.strokeStyle = ROAD_LINE;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath();
-      ctx.moveTo(sx - 8, sy);
-      ctx.lineTo(sx + 8, sy);
-      ctx.stroke();
-      ctx.setLineDash([]);
     } else {
-      drawIsoDiamond(ctx, sx, sy, TILE_W, TILE_H, ROAD_COLOR);
-      // Road markings
-      ctx.strokeStyle = ROAD_LINE;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 4]);
-      if (tile.type === "road_h") {
-        ctx.beginPath();
-        ctx.moveTo(sx - TILE_W / 4, sy);
-        ctx.lineTo(sx + TILE_W / 4, sy);
-        ctx.stroke();
-      } else {
-        ctx.beginPath();
-        ctx.moveTo(sx, sy - TILE_H / 4);
-        ctx.lineTo(sx, sy + TILE_H / 4);
-        ctx.stroke();
+      // Draw road sprite
+      const roadUrl = ROAD_SPRITE_MAP[tile.type];
+      if (roadUrl) {
+        const img = getImage(roadUrl);
+        if (img) {
+          // Road tiles are drawn as isometric diamonds filling the tile
+          const rw = TILE_W + 2;
+          const rh = TILE_H + 2;
+          ctx.drawImage(img, sx - rw / 2, sy - rh / 2, rw, rh);
+        } else {
+          // Fallback: colored diamond
+          drawIsoDiamond(ctx, sx, sy, TILE_W, TILE_H, "#2a2a3a");
+          ctx.strokeStyle = "#4a6a8a";
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(sx - TILE_W / 4, sy);
+          ctx.lineTo(sx + TILE_W / 4, sy);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
       }
-      ctx.setLineDash([]);
-      // Sidewalk edges
-      drawIsoDiamond(ctx, sx, sy, TILE_W + 4, TILE_H + 2, "transparent");
-      ctx.strokeStyle = SIDEWALK_COLOR;
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
     }
   }
 
-  // Layer 2: Buildings
-  for (const building of block.buildings) {
+  // Layer 2: Buildings (sorted back-to-front for proper overlap)
+  const sortedBuildings = [...block.buildings].sort((a, b) => (a.x + a.y) - (b.x + b.y));
+  for (const building of sortedBuildings) {
     const [ix, iy] = toIso(building.x, building.y);
     const sx = offsetX + ix;
     const sy = offsetY + iy;
-    const colors = BUILDING_COLORS[building.type] || BUILDING_COLORS.office_skyscraper;
-    const height = building.floors * 18;
+    const spriteUrl = BUILDING_SPRITE_MAP[building.type];
 
-    drawIsoBox(ctx, sx, sy, TILE_W * 0.8, TILE_H * 0.8, height, colors);
-
-    // Neon accent glow
-    drawGlowCircle(ctx, sx, sy - height - 5, 8, colors.accent + "40");
-
-    // Windows
-    ctx.fillStyle = colors.accent + "80";
-    for (let f = 0; f < building.floors; f++) {
-      const wy = sy - f * 18 - 10;
-      for (let w = 0; w < 3; w++) {
-        ctx.fillRect(sx - 8 + w * 6, wy, 3, 4);
-      }
+    if (spriteUrl) {
+      // Scale building sprite based on floors
+      const baseWidth = building.type === "neon_retail_strip_mall" ? 90 : 65;
+      const heightScale = 1 + (building.floors - 1) * 0.12;
+      drawSprite(ctx, spriteUrl, sx, sy + 8, baseWidth * heightScale, 0);
+      // Neon glow beneath
+      drawGlowCircle(ctx, sx, sy + 4, 20, config.color + "40");
     }
   }
 
@@ -502,135 +580,81 @@ function renderBlock(ctx: CanvasRenderingContext2D, block: Block, offsetX: numbe
     const [ix, iy] = toIso(supplier.x, supplier.y);
     const sx = offsetX + ix;
     const sy = offsetY + iy;
-    const color = SUPPLIER_COLORS[supplier.type] || "#ffffff";
+    const spriteUrl = SUPPLIER_SPRITE_MAP[supplier.type];
 
-    if (supplier.isBlackMarket) {
-      // Dark alley with red glow
-      drawIsoBox(ctx, sx, sy, TILE_W * 0.6, TILE_H * 0.6, 25, {
-        top: "#1a0a0a", left: "#0a0505", right: "#050202",
-      });
-      drawGlowCircle(ctx, sx, sy - 30, 15, "#ff000060");
-      // Skull icon
-      ctx.fillStyle = "#ff0000";
-      ctx.font = "10px monospace";
-      ctx.textAlign = "center";
-      ctx.fillText("☠", sx, sy - 28);
-    } else {
-      drawIsoBox(ctx, sx, sy, TILE_W * 0.7, TILE_H * 0.7, 30, {
-        top: color + "cc", left: color + "99", right: color + "66",
-      });
-      drawGlowCircle(ctx, sx, sy - 35, 12, color + "50");
-      // Label
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 6px monospace";
-      ctx.textAlign = "center";
-      ctx.fillText(supplier.type.replace(/_/g, " ").toUpperCase(), sx, sy - 33);
+    if (spriteUrl) {
+      drawSprite(ctx, spriteUrl, sx, sy + 8, supplier.isBlackMarket ? 55 : 65, 0);
+      // Glow effect
+      if (supplier.isBlackMarket) {
+        drawGlowCircle(ctx, sx, sy - 10, 20, "#ff000040");
+        // Pulsing red warning
+        ctx.fillStyle = "#ff0000cc";
+        ctx.font = "bold 8px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText("BLACK MARKET", sx, sy - 40);
+      } else {
+        drawGlowCircle(ctx, sx, sy - 10, 15, "#00d4ff30");
+        ctx.fillStyle = "#ffffffaa";
+        ctx.font = "bold 6px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(supplier.type.replace(/_/g, " ").toUpperCase(), sx, sy - 38);
+      }
     }
   }
 
-  // Layer 4: Props
+  // Layer 4: Vending Machines
+  for (const vm of block.vendingMachines) {
+    const [ix, iy] = toIso(vm.x, vm.y);
+    const sx = offsetX + ix;
+    const sy = offsetY + iy;
+    const spriteUrl = VM_SPRITE_MAP[vm.type];
+
+    if (spriteUrl) {
+      drawSprite(ctx, spriteUrl, sx, sy + 4, 28, 0);
+      // Subtle glow
+      drawGlowCircle(ctx, sx, sy + 2, 10, "#00d4ff20");
+    }
+  }
+
+  // Layer 5: Props
   for (const prop of block.props) {
     const [ix, iy] = toIso(prop.x, prop.y);
     const sx = offsetX + ix;
     const sy = offsetY + iy;
+    const spriteUrl = PROP_SPRITE_MAP[prop.type];
 
-    switch (prop.type) {
-      case "streetlight":
-        ctx.strokeStyle = "#666666";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(sx, sy);
-        ctx.lineTo(sx, sy - 16);
-        ctx.stroke();
-        drawGlowCircle(ctx, sx, sy - 18, 8, "#ffcc6640");
-        ctx.fillStyle = "#ffcc66";
-        ctx.beginPath();
-        ctx.arc(sx, sy - 18, 2, 0, Math.PI * 2);
-        ctx.fill();
-        break;
-      case "tree":
-        ctx.fillStyle = "#1a3a1a";
-        ctx.beginPath();
-        ctx.arc(sx, sy - 10, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#2a5a2a";
-        ctx.beginPath();
-        ctx.arc(sx, sy - 12, 5, 0, Math.PI * 2);
-        ctx.fill();
-        drawGlowCircle(ctx, sx, sy - 10, 4, "#00ffcc30");
-        ctx.strokeStyle = "#4a2a1a";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(sx, sy);
-        ctx.lineTo(sx, sy - 6);
-        ctx.stroke();
-        break;
-      case "bench":
-        ctx.fillStyle = "#3a4a5a";
-        ctx.fillRect(sx - 5, sy - 3, 10, 3);
-        ctx.strokeStyle = "#00d4ff40";
-        ctx.lineWidth = 0.5;
-        ctx.strokeRect(sx - 5, sy - 3, 10, 3);
-        break;
-      case "bus_stop":
-        drawIsoBox(ctx, sx, sy, 12, 8, 14, {
-          top: "#2a3a4a", left: "#1a2a3a", right: "#0a1a2a",
-        });
-        drawGlowCircle(ctx, sx, sy - 16, 5, "#00d4ff30");
-        break;
+    if (spriteUrl) {
+      const size = prop.type === "bus_stop" ? 24 : prop.type === "tree" ? 20 : 16;
+      drawSprite(ctx, spriteUrl, sx, sy + 4, size, 0);
+      // Light glow for streetlights
+      if (prop.type === "streetlight") {
+        drawGlowCircle(ctx, sx, sy - 8, 12, "#ffcc6630");
+      }
     }
   }
 
-  // Layer 5: Vehicles
+  // Layer 6: Vehicles
   for (const vehicle of block.vehicles) {
     const [ix, iy] = toIso(vehicle.x, vehicle.y);
     const sx = offsetX + ix;
     const sy = offsetY + iy;
+    const size = 30 * vehicle.scale;
+    const flipH = vehicle.dir === 180 || vehicle.dir === 270;
 
-    // Simple car shape
-    ctx.fillStyle = vehicle.color;
-    ctx.beginPath();
-    if (vehicle.dir === 0 || vehicle.dir === 180) {
-      ctx.ellipse(sx, sy, 8, 4, 0, 0, Math.PI * 2);
-    } else {
-      ctx.ellipse(sx, sy, 4, 8, 0, 0, Math.PI * 2);
-    }
-    ctx.fill();
-    // Headlights
-    ctx.fillStyle = "#ffffff80";
-    ctx.beginPath();
-    ctx.arc(sx + (vehicle.dir === 0 ? 6 : vehicle.dir === 180 ? -6 : 0),
-            sy + (vehicle.dir === 90 ? 6 : vehicle.dir === 270 ? -6 : 0), 1.5, 0, Math.PI * 2);
-    ctx.fill();
+    drawSprite(ctx, vehicle.spriteUrl, sx, sy + 4, size, 0, flipH);
     // Neon underglow
-    drawGlowCircle(ctx, sx, sy + 2, 6, vehicle.color + "30");
+    drawGlowCircle(ctx, sx, sy + 2, 8, "#00d4ff18");
   }
 
-  // Layer 6: NPCs
+  // Layer 7: NPCs (on top of everything)
   for (const npc of block.npcs) {
     const [ix, iy] = toIso(npc.x, npc.y);
     const sx = offsetX + ix;
     const sy = offsetY + iy;
+    const size = npc.isWorker ? 18 : 15;
+    const flipH = npc.walkDir > 180;
 
-    // Body
-    ctx.fillStyle = "#1a1a2a";
-    ctx.beginPath();
-    ctx.ellipse(sx, sy + 1, 3, 2, 0, 0, Math.PI * 2);
-    ctx.fill();
-    // Head
-    ctx.fillStyle = "#3a3a4a";
-    ctx.beginPath();
-    ctx.arc(sx, sy - 4, 2.5, 0, Math.PI * 2);
-    ctx.fill();
-    // Neon accent
-    ctx.strokeStyle = npc.color;
-    ctx.lineWidth = 0.8;
-    ctx.beginPath();
-    ctx.moveTo(sx - 2, sy - 1);
-    ctx.lineTo(sx + 2, sy - 1);
-    ctx.stroke();
-    // Glow
-    drawGlowCircle(ctx, sx, sy, 4, npc.color + "20");
+    drawSprite(ctx, npc.spriteUrl, sx, sy + 4, size, 0, flipH);
   }
 }
 
@@ -657,8 +681,45 @@ export default function WorldMapDemo() {
   const [lng, setLng] = useState(-96.7970);
   const [seasonId, setSeasonId] = useState(1);
   const [viewRadius, setViewRadius] = useState(2);
-  const [hoveredBlock, setHoveredBlock] = useState<Block | null>(null);
   const [selectedCity, setSelectedCity] = useState("Dallas, TX");
+  const [spritesLoaded, setSpritesLoaded] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const animFrameRef = useRef<number>(0);
+
+  // Preload all sprites on mount
+  useEffect(() => {
+    let cancelled = false;
+    const allUrls = [
+      ...Object.values(BUILDING_SPRITE_MAP),
+      ...Object.values(SUPPLIER_SPRITE_MAP),
+      ...Object.values(VM_SPRITE_MAP),
+      ...Object.values(PROP_SPRITE_MAP),
+      ...Object.values(ROAD_SPRITE_MAP),
+      ...NPC_SPRITES,
+      ...WORKER_SPRITES,
+      ...VEHICLE_SPRITES,
+      TRUCK_SPRITE,
+      DRONE_SPRITE,
+    ];
+    let loaded = 0;
+    const total = allUrls.length;
+
+    allUrls.forEach(url => {
+      loadImage(url).then(() => {
+        if (cancelled) return;
+        loaded++;
+        setLoadingProgress(Math.round((loaded / total) * 100));
+        if (loaded === total) setSpritesLoaded(true);
+      }).catch(() => {
+        if (cancelled) return;
+        loaded++;
+        setLoadingProgress(Math.round((loaded / total) * 100));
+        if (loaded === total) setSpritesLoaded(true);
+      });
+    });
+
+    return () => { cancelled = true; };
+  }, []);
 
   const render = useCallback(() => {
     const canvas = canvasRef.current;
@@ -689,18 +750,16 @@ export default function WorldMapDemo() {
       }
     }
 
-    // Calculate canvas center
     const centerX = rect.width / 2;
     const centerY = rect.height / 3;
 
-    // Render each block
+    // Render each block (back to front for proper overlap)
     const gridSize = viewRadius * 2 + 1;
     for (let i = 0; i < blocks.length; i++) {
       const block = blocks[i];
       const by = Math.floor(i / gridSize) - viewRadius;
       const bx = (i % gridSize) - viewRadius;
 
-      // Block offset in iso space
       const blockOffX = (bx - by) * (TILE_W / 2) * GRID;
       const blockOffY = (bx + by) * (TILE_H / 2) * GRID;
 
@@ -715,7 +774,13 @@ export default function WorldMapDemo() {
     ctx.fillStyle = "#8a8a9a";
     ctx.font = "12px 'Courier New', monospace";
     ctx.fillText(`Season ${seasonId} | Lat: ${lat.toFixed(4)} | Lng: ${lng.toFixed(4)} | Radius: ${viewRadius}`, 20, 50);
-    ctx.fillText(`Blocks: ${blocks.length} | Grid: ${GRID}x${GRID} per block`, 20, 68);
+
+    // Stats
+    const totalNpcs = blocks.reduce((s, b) => s + b.npcs.length, 0);
+    const totalVehicles = blocks.reduce((s, b) => s + b.vehicles.length, 0);
+    const totalVMs = blocks.reduce((s, b) => s + b.vendingMachines.length, 0);
+    const totalSuppliers = blocks.reduce((s, b) => s + b.suppliers.length, 0);
+    ctx.fillText(`NPCs: ${totalNpcs} | Vehicles: ${totalVehicles} | Vending Machines: ${totalVMs} | Suppliers: ${totalSuppliers}`, 20, 68);
 
     // District legend
     const legendY = rect.height - 120;
@@ -723,7 +788,7 @@ export default function WorldMapDemo() {
     ctx.font = "bold 11px 'Courier New', monospace";
     ctx.fillText("DISTRICT TYPES:", 20, legendY);
     let ly = legendY + 16;
-    for (const [type, config] of Object.entries(DISTRICTS)) {
+    for (const [, config] of Object.entries(DISTRICTS)) {
       ctx.fillStyle = config.color;
       ctx.fillRect(20, ly - 8, 10, 10);
       ctx.strokeStyle = "#00d4ff40";
@@ -735,12 +800,18 @@ export default function WorldMapDemo() {
     }
   }, [lat, lng, seasonId, viewRadius, selectedCity]);
 
+  // Re-render when sprites finish loading or params change
   useEffect(() => {
     render();
+    // Keep re-rendering while sprites are still loading
+    if (!spritesLoaded) {
+      const interval = setInterval(render, 500);
+      return () => clearInterval(interval);
+    }
     const handleResize = () => render();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [render]);
+  }, [render, spritesLoaded]);
 
   const handleCityChange = (cityName: string) => {
     const city = US_CITIES.find(c => c.name === cityName);
@@ -753,6 +824,20 @@ export default function WorldMapDemo() {
 
   return (
     <div className="min-h-screen bg-[#0a0a14] text-white flex flex-col">
+      {/* Loading overlay */}
+      {!spritesLoaded && (
+        <div className="fixed inset-0 z-50 bg-[#0a0a14] flex flex-col items-center justify-center gap-4">
+          <div className="text-[#00d4ff] font-mono text-lg">Loading VendFX World Sprites...</div>
+          <div className="w-64 h-2 bg-[#1a1a2a] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-[#00d4ff] to-[#ff00ff] transition-all duration-300 rounded-full"
+              style={{ width: `${loadingProgress}%` }}
+            />
+          </div>
+          <div className="text-[#8a8a9a] font-mono text-sm">{loadingProgress}% — {Math.round(loadingProgress * 59 / 100)}/59 sprites</div>
+        </div>
+      )}
+
       {/* Controls Bar */}
       <div className="bg-[#12121e] border-b border-[#1a1a2a] px-6 py-3 flex items-center gap-4 flex-wrap">
         <div className="flex items-center gap-2">
