@@ -206,3 +206,15 @@
 - [x] Build player-wide power-up/upgrade summary
 - [x] Create tRPC router for power-up and upgrade operations (15 procedures)
 - [x] Write comprehensive tests for power-up and upgrade logic (293 tests total, all passing)
+
+## Integration / E2E Tests
+- [x] Review existing engines, routers, and test patterns for E2E planning
+- [x] Write integration tests for core game flows (player lifecycle, machine operations, inventory)
+- [x] Write integration tests for economy flows (dual-wallet, season entry/payout, marketplace P2P)
+- [x] Write integration tests for HR/fleet dispatch, market engine, and power-up/upgrade flows
+- [x] Write integration tests for compliance (KYC, geo-blocking, responsible gaming, GDPR)
+- [x] Write integration tests for alliance economics (treasury contributions, member fairness)
+- [x] Write integration tests for cross-system interactions (season + market + fleet + score)
+- [x] Write edge case & boundary condition tests (zero stats, max stats, ELO extremes, GPS edge cases)
+- [x] Run all tests and verify total count (422 tests across 13 files, all passing)
+- [ ] Push updated tests to GitHub
