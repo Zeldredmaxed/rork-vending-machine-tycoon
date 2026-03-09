@@ -217,4 +217,19 @@
 - [x] Write integration tests for cross-system interactions (season + market + fleet + score)
 - [x] Write edge case & boundary condition tests (zero stats, max stats, ELO extremes, GPS edge cases)
 - [x] Run all tests and verify total count (422 tests across 13 files, all passing)
-- [ ] Push updated tests to GitHub
+- [x] Push updated tests to GitHub
+
+## World Map Procedural Generation System
+- [x] Generate remaining sprites: city props (10 sprites: roads, streetlights, trees, benches, bus stops, claim marker, turf dome)
+- [x] Generate remaining sprites: vehicles (7 sprites: HR car, van, truck, civilian cars, drones)
+- [x] Generate remaining sprites: characters (11 sprites: delivery worker, mechanic, angry worker, NPCs, crowd, musician, guard)
+- [x] Build seed-based procedural generation engine (deterministic from lat/lng coordinates)
+- [x] Define district type system (downtown, residential, retail, industrial, transit, park)
+- [x] Build building/prop placement rules per district type
+- [x] Build black market alley rare spawn system (1.5% probability, 25% caught chance, $5k fine)
+- [x] Build NPC density and traffic rules per district type
+- [x] Build tRPC procedures for world map (10 procedures: getBlock, getViewport, getLocationSummary, getDistrictConfigs, getSupplierInfo, getVendingMachineSprites, getMachinesInArea, getMyMachines, blackMarketPurchase, analyzeLocation)
+- [x] Write tests for procedural generation engine (93 tests, all passing — 516 total)
+- [x] Build visual demo renderer (canvas-based isometric city block viewer with 6 layers, 10 US cities, season switching)
+- [x] Upload sprite assets to CDN (59 sprites across 5 categories)
+- [ ] Save checkpoint and push to GitHub
