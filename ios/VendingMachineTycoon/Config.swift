@@ -12,3 +12,4 @@ enum Config {
     // Add your ENV in Project Settings → Environment Variables
     // Then use Config.YOUR_ENV_NAME in code
 }
+// VendFX Vending Machine Tycoon
